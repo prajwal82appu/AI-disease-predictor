@@ -1,0 +1,135 @@
+[
+  {
+    "patient_id": "PT-1001",
+    "name": "John Doe",
+    "email": "john.doe@hospital.com",
+    "password_hash": "scrypt:32768:8:1$XSXnvbCTjz6QzONt$8ced8088871b11e468ce339a33c87b2085fb87d60d70f07971f24bb8b5a56294b06d6f8c671a2d24510b44dda192272db176fac9989585050752a7fd0d5537f4",
+    "age": 48,
+    "gender": "Male",
+    "blood_group": "O+",
+    "phone": "+1 (555) 234-5678",
+    "emergency_contact": "Mary Doe (+1 555-234-5679)",
+    "created_at": "2026-09-01 10:30",
+    "prediction_history": [
+      {
+        "id": "REC-105",
+        "disease": "Random Forest Nuclear Morphometry Classifier (Accuracy: 98.25%)",
+        "prediction": "Benign Lesion / Low Risk",
+        "risk_level": "LOW RISK",
+        "risk_score": 22.16,
+        "confidence": 77.84,
+        "model_used": "Random Forest Nuclear Morphometry Classifier (Accuracy: 98.25%)",
+        "timestamp": "2026-09-11 17:19",
+        "notes": "Primary Test: Core Needle Biopsy (Histopathology) & Digital Mammography (BI-RADS). Recommendation: Benign morphometric nuclear characteristics. Continue routine screening mammogra..."
+      },
+      {
+        "id": "REC-104",
+        "disease": "Parkinson Disease Test",
+        "prediction": "Low Neurological Risk Identified",
+        "risk_level": "SAFE",
+        "risk_score": 15.2,
+        "confidence": 98.4,
+        "model_used": "XGBoost Vocal Model",
+        "timestamp": "2026-09-11 17:13",
+        "notes": "Voice biomarkers normal"
+      },
+      {
+        "id": "REC-103",
+        "disease": "Parkinson Disease Test",
+        "prediction": "Low Neurological Risk Identified",
+        "risk_level": "SAFE",
+        "risk_score": 15.2,
+        "confidence": 98.4,
+        "model_used": "XGBoost Vocal Model",
+        "timestamp": "2026-09-11 17:13",
+        "notes": "Voice biomarkers normal"
+      },
+      {
+        "id": "REC-101",
+        "disease": "Chronic Kidney Disease (CKD)",
+        "prediction": "Chronic Kidney Disease Risk Identified",
+        "risk_level": "HIGH RISK",
+        "risk_score": 88.5,
+        "confidence": 98.2,
+        "model_used": "Random Forest Ensemble",
+        "timestamp": "2026-09-05 14:22",
+        "notes": "Elevated serum creatinine (3.8 mg/dL) and blood urea (78 mg/dL) detected."
+      },
+      {
+        "id": "REC-102",
+        "disease": "Type 2 Diabetes Mellitus",
+        "prediction": "Moderate Diabetic Risk Identified",
+        "risk_level": "MODERATE RISK",
+        "risk_score": 64.0,
+        "confidence": 96.5,
+        "model_used": "Random Forest Classifier",
+        "timestamp": "2026-09-08 09:15",
+        "notes": "Fasting glucose 142 mg/dL with BMI 29.4."
+      }
+    ]
+  },
+  {
+    "patient_id": "PT-1002",
+    "name": "Sarah Smith",
+    "email": "sarah.smith@hospital.com",
+    "password_hash": "scrypt:32768:8:1$XSXnvbCTjz6QzONt$8ced8088871b11e468ce339a33c87b2085fb87d60d70f07971f24bb8b5a56294b06d6f8c671a2d24510b44dda192272db176fac9989585050752a7fd0d5537f4",
+    "age": 34,
+    "gender": "Female",
+    "blood_group": "B+",
+    "phone": "+1 (555) 345-6789",
+    "emergency_contact": "David Smith (+1 555-345-6780)",
+    "created_at": "2026-09-03 11:45",
+    "prediction_history": [
+      {
+        "id": "REC-201",
+        "disease": "Breast Cancer Risk Assessment",
+        "prediction": "Benign / Normal Biomarker Evaluation",
+        "risk_level": "SAFE",
+        "risk_score": 12.0,
+        "confidence": 99.1,
+        "model_used": "Random Forest Classifier (WDBC)",
+        "timestamp": "2026-09-09 16:30",
+        "notes": "Cell radius and texture measurements within normal ranges."
+      }
+    ]
+  },
+  {
+    "patient_id": "PT-1003",
+    "name": "Test New Patient",
+    "email": "test.user_1789126980@hospital.com",
+    "password_hash": "scrypt:32768:8:1$h1NlMsFBr90USiUB$e6e5c81383af5d623483d9dc64786413d008659568aceae87a6492408392f75e0ef2018be4fd8e03dbe1590e43cd3d22a0e2b7ad59d8f3a16a7c72b51f25aad1",
+    "age": 38,
+    "gender": "Female",
+    "blood_group": "AB+",
+    "phone": "+1 (555) 999-8888",
+    "emergency_contact": "",
+    "created_at": "2026-09-11 17:13",
+    "prediction_history": []
+  },
+  {
+    "patient_id": "PT-1004",
+    "name": "Test New Patient",
+    "email": "test.user_1789127006@hospital.com",
+    "password_hash": "scrypt:32768:8:1$J7yT6tjfn1Sk4CFv$89411f1498ec6082288f25be0df299333e4608c01625692bbde55fcef2d27a758ab4be0c773ab5ee6c50b1e19b8afd70d79bc0b29db2cfa1e51681ebc3e421e7",
+    "age": 38,
+    "gender": "Female",
+    "blood_group": "AB+",
+    "phone": "+1 (555) 999-8888",
+    "emergency_contact": "",
+    "created_at": "2026-09-11 17:13",
+    "prediction_history": []
+  },
+  {
+    "patient_id": "PT-1005",
+    "name": "Ramesh Patel 1789128378",
+    "email": "ramesh_1789128378@test.com",
+    "password_hash": "scrypt:32768:8:1$AudQFy7uqMeOliRx$ee73a691431e5ffe3334af4ccf0e3d5a764d235ee3a2b1cc29c323e1398ff0a86a348699b02786a390bf99cf087b97986ec7c8c903bcc1bd08fa145eadbc440e",
+    "age": 52,
+    "gender": "Male",
+    "blood_group": "B+",
+    "phone": "+91 98765 43210",
+    "emergency_contact": "",
+    "created_at": "2026-09-11 17:36",
+    "prediction_history": []
+  }
+]

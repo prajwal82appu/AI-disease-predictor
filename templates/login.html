@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Portal — AI Disease Prediction System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #0b0f19;
+            --bg-secondary: #131b2e;
+            --bg-card: rgba(23, 32, 54, 0.75);
+            --border-glow: rgba(59, 130, 246, 0.25);
+            --accent-cyan: #06b6d4;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-emerald: #10b981;
+            --accent-rose: #f43f5e;
+            --accent-amber: #f59e0b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background-image: 
+                radial-gradient(circle at 12% 18%, rgba(6, 182, 212, 0.12) 0%, transparent 45%),
+                radial-gradient(circle at 88% 82%, rgba(139, 92, 246, 0.12) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 60%);
+            background-attachment: fixed;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Ambient floating orbs */
+        .ambient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .orb-1 {
+            width: 320px;
+            height: 320px;
+            background: rgba(6, 182, 212, 0.15);
+            top: -60px;
+            left: -60px;
+        }
+        .orb-2 {
+            width: 380px;
+            height: 380px;
+            background: rgba(139, 92, 246, 0.15);
+            bottom: -80px;
+            right: -80px;
+        }
+
+        /* Main Container */
+        .portal-wrapper {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 980px;
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            background: rgba(19, 27, 46, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.6), 0 0 35px rgba(6, 182, 212, 0.15);
+            overflow: hidden;
+        }
+
+        /* Left Showcase Column */
+        .portal-showcase {
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(23, 32, 54, 0.85));
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 44px 36px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .brand-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-badge-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            box-shadow: 0 0 25px rgba(6, 182, 212, 0.45);
+        }
+
+        .brand-title-wrap h2 {
+            font-size: 20px;
+            font-weight: 800;
+            background: linear-gradient(to right, #ffffff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-title-wrap p {
+            font-size: 11px;
+            color: var(--accent-cyan);
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .showcase-body {
+            margin: 32px 0;
+        }
+
+        .showcase-body h1 {
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1.25;
+            margin-bottom: 12px;
+        }
+
+        .showcase-body h1 span {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .showcase-body p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .features-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+
+        .feature-item:hover {
+            border-color: rgba(6, 182, 212, 0.3);
+            background: rgba(6, 182, 212, 0.05);
+            transform: translateX(4px);
+        }
+
+        .feature-item i {
+            font-size: 16px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .feature-item.cyan i { color: var(--accent-cyan); }
+        .feature-item.purple i { color: var(--accent-purple); }
+        .feature-item.emerald i { color: var(--accent-emerald); }
+
+        .showcase-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .badge-security {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-emerald);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        /* Right Form Column */
+        .portal-form-area {
+            padding: 40px 36px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: var(--bg-secondary);
+        }
+
+        /* Tabs */
+        .tab-switcher {
+            display: flex;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 24px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 13px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab-btn.active {
+            color: white;
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.25), rgba(59, 130, 246, 0.25));
+            border: 1px solid rgba(6, 182, 212, 0.4);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Notification Banner */
+        .alert-banner {
+            display: none;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 20px;
+            align-items: center;
+            gap: 10px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .alert-banner.error {
+            display: flex;
+            background: rgba(244, 63, 94, 0.15);
+            border: 1px solid var(--accent-rose);
+            color: #fecdd3;
+        }
+
+        .alert-banner.success {
+            display: flex;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid var(--accent-emerald);
+            color: #a7f3d0;
+        }
+
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            letter-spacing: 0.3px;
+        }
+
+        .input-icon-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon-wrap i.field-icon {
+            position: absolute;
+            left: 14px;
+            color: var(--text-muted);
+            font-size: 14px;
+            pointer-events: none;
+            transition: color 0.2s;
+        }
+
+        .input-control {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            padding: 12px 14px 12px 42px;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .input-control:focus {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2);
+            background: rgba(15, 23, 42, 0.9);
+        }
+
+        .input-control:focus + i.field-icon {
+            color: var(--accent-cyan);
+        }
+
+        .toggle-pwd-btn {
+            position: absolute;
+            right: 14px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 4px;
+            transition: color 0.2s;
+        }
+
+        .toggle-pwd-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .form-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        select.input-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2214%22%20height%3D%2214%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2394a3b8%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 36px;
+        }
+
+        select.input-control option {
+            background: #131b2e;
+            color: #f8fafc;
+        }
+
+        .form-options {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            accent-color: var(--accent-cyan);
+            width: 15px;
+            height: 15px;
+            cursor: pointer;
+        }
+
+        /* Buttons */
+        .btn-primary-portal {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            border: none;
+            color: white;
+            padding: 13px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.35);
+        }
+
+        .btn-primary-portal:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(6, 182, 212, 0.5);
+            background: linear-gradient(135deg, #0891b2, #2563eb);
+        }
+
+        .btn-primary-portal:active {
+            transform: translateY(0);
+        }
+
+        /* Demo Login Box */
+        .demo-box {
+            margin-top: 18px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed rgba(6, 182, 212, 0.3);
+            border-radius: 12px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .demo-box-info {
+            font-size: 12px;
+        }
+
+        .demo-box-info strong {
+            color: var(--accent-cyan);
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .demo-box-info span {
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+        }
+
+        .btn-demo-quick {
+            background: rgba(6, 182, 212, 0.15);
+            border: 1px solid rgba(6, 182, 212, 0.4);
+            color: var(--accent-cyan);
+            padding: 7px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .btn-demo-quick:hover {
+            background: var(--accent-cyan);
+            color: #0b0f19;
+            box-shadow: 0 0 12px rgba(6, 182, 212, 0.4);
+        }
+
+        /* Guest / Dashboard Link */
+        .guest-link-wrap {
+            margin-top: 22px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .guest-link-wrap a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .guest-link-wrap a:hover {
+            color: var(--accent-cyan);
+        }
+
+        /* Form view visibility */
+        .form-view {
+            display: none;
+        }
+        .form-view.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 860px) {
+            .portal-wrapper {
+                grid-template-columns: 1fr;
+            }
+            .portal-showcase {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+
+    <div class="portal-wrapper">
+        <!-- Left Showcase -->
+        <div class="portal-showcase">
+            <div>
+                <div class="brand-header">
+                    <div class="brand-badge-icon">
+                        <i class="fa-solid fa-heart-pulse"></i>
+                    </div>
+                    <div class="brand-title-wrap">
+                        <h2>AI Disease Predictor</h2>
+                        <p>Patient Health Portal</p>
+                    </div>
+                </div>
+
+                <div class="showcase-body">
+                    <h1>Personalized <span>AI Health Intelligence</span> at your fingertips.</h1>
+                    <p>Securely authenticate to access your predictive diagnostic history, laboratory report analysis, and personalized risk trajectory tracking.</p>
+
+                    <div class="features-list">
+                        <div class="feature-item cyan">
+                            <i class="fa-solid fa-shield-heart"></i>
+                            <div>
+                                <strong>Multi-Organ Risk Analysis</strong>
+                                <div style="color:var(--text-secondary); font-size:11px;">Kidney, Cardiac, Diabetes & Neuro Assessment</div>
+                            </div>
+                        </div>
+                        <div class="feature-item purple">
+                            <i class="fa-solid fa-file-waveform"></i>
+                            <div>
+                                <strong>Personalized Medical History</strong>
+                                <div style="color:var(--text-secondary); font-size:11px;">Track past diagnostic evaluations & biomarkers</div>
+                            </div>
+                        </div>
+                        <div class="feature-item emerald">
+                            <i class="fa-solid fa-microchip"></i>
+                            <div>
+                                <strong>CNN Real-Time Report OCR</strong>
+                                <div style="color:var(--text-secondary); font-size:11px;">High accuracy deep learning diagnostic pipeline</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="showcase-footer">
+                <div class="badge-security">
+                    <i class="fa-solid fa-lock"></i> 256-Bit SSL Encrypted
+                </div>
+                <span>RLJIT Major Project Phase 2</span>
+            </div>
+        </div>
+
+        <!-- Right Form Area -->
+        <div class="portal-form-area">
+            <!-- Tabs -->
+            <div class="tab-switcher">
+                <button type="button" class="tab-btn active" id="tab-btn-login" onclick="switchPortalTab('login')">
+                    <i class="fa-solid fa-right-to-bracket"></i> Patient Sign In
+                </button>
+                <button type="button" class="tab-btn" id="tab-btn-register" onclick="switchPortalTab('register')">
+                    <i class="fa-solid fa-user-plus"></i> Register Patient
+                </button>
+            </div>
+
+            <!-- Alert notification -->
+            <div id="portal-alert" class="alert-banner">
+                <i class="fa-solid fa-circle-info" id="alert-icon"></i>
+                <span id="alert-msg"></span>
+            </div>
+
+            <!-- 1. PATIENT SIGN IN FORM -->
+            <div id="view-login" class="form-view active">
+                <form id="patient-login-form" onsubmit="handlePatientLogin(event)">
+                    <div class="form-group">
+                        <label for="login-identifier"><i class="fa-solid fa-user"></i> Patient Name (or Email / Patient ID)</label>
+                        <div class="input-icon-wrap">
+                            <input type="text" id="login-identifier" class="input-control" placeholder="Enter your Name (e.g. John Doe) or Email" required autocomplete="username">
+                            <i class="fa-solid fa-user field-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="login-password"><i class="fa-solid fa-key"></i> Password</label>
+                        <div class="input-icon-wrap">
+                            <input type="password" id="login-password" class="input-control" placeholder="Enter your password" required autocomplete="current-password">
+                            <i class="fa-solid fa-lock field-icon"></i>
+                            <button type="button" class="toggle-pwd-btn" onclick="togglePasswordVisibility('login-password', this)">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="remember-me" checked>
+                            <span>Remember this device</span>
+                        </label>
+                        <span style="color:var(--accent-cyan); font-size:11px; cursor:pointer;" onclick="fillDemoCredentials()">Demo credentials?</span>
+                    </div>
+
+                    <button type="submit" id="btn-login-submit" class="btn-primary-portal">
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In to Patient Portal
+                    </button>
+                </form>
+
+                <!-- One-click Demo Patient Login -->
+                <div class="demo-box">
+                    <div class="demo-box-info">
+                        <strong><i class="fa-solid fa-bolt" style="color:var(--accent-amber)"></i> Demo Patient Account</strong>
+                        <span>Name: John Doe | Password: patient123</span>
+                    </div>
+                    <button type="button" class="btn-demo-quick" onclick="oneClickDemoLogin()">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> 1-Click Login
+                    </button>
+                </div>
+
+                <div class="guest-link-wrap">
+                    <a href="/">
+                        <i class="fa-solid fa-arrow-left"></i> Continue to Diagnostic Console as Guest
+                    </a>
+                </div>
+            </div>
+
+            <!-- 2. PATIENT REGISTRATION FORM -->
+            <div id="view-register" class="form-view">
+                <form id="patient-register-form" onsubmit="handlePatientRegister(event)">
+                    <div class="form-group">
+                        <label for="reg-name"><i class="fa-solid fa-user"></i> Full Legal Name</label>
+                        <div class="input-icon-wrap">
+                            <input type="text" id="reg-name" class="input-control" placeholder="e.g. Alex Morgan" required>
+                            <i class="fa-solid fa-signature field-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-email"><i class="fa-solid fa-envelope"></i> Email Address</label>
+                        <div class="input-icon-wrap">
+                            <input type="email" id="reg-email" class="input-control" placeholder="e.g. alex.morgan@example.com" required>
+                            <i class="fa-solid fa-at field-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label for="reg-age"><i class="fa-solid fa-calendar-day"></i> Age</label>
+                            <div class="input-icon-wrap">
+                                <input type="number" id="reg-age" class="input-control" placeholder="e.g. 42" min="1" max="120" required>
+                                <i class="fa-solid fa-hashtag field-icon"></i>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reg-gender"><i class="fa-solid fa-venus-mars"></i> Gender</label>
+                            <div class="input-icon-wrap">
+                                <select id="reg-gender" class="input-control" required>
+                                    <option value="" disabled selected>Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <i class="fa-solid fa-person field-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label for="reg-blood"><i class="fa-solid fa-droplet" style="color:var(--accent-rose)"></i> Blood Group</label>
+                            <div class="input-icon-wrap">
+                                <select id="reg-blood" class="input-control" required>
+                                    <option value="O+">O Positive (O+)</option>
+                                    <option value="O-">O Negative (O-)</option>
+                                    <option value="A+">A Positive (A+)</option>
+                                    <option value="A-">A Negative (A-)</option>
+                                    <option value="B+" selected>B Positive (B+)</option>
+                                    <option value="B-">B Negative (B-)</option>
+                                    <option value="AB+">AB Positive (AB+)</option>
+                                    <option value="AB-">AB Negative (AB-)</option>
+                                </select>
+                                <i class="fa-solid fa-vial field-icon"></i>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reg-phone"><i class="fa-solid fa-phone"></i> Contact Phone</label>
+                            <div class="input-icon-wrap">
+                                <input type="tel" id="reg-phone" class="input-control" placeholder="+1 (555) 000-0000" required>
+                                <i class="fa-solid fa-mobile-screen field-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label for="reg-password"><i class="fa-solid fa-lock"></i> Password</label>
+                            <div class="input-icon-wrap">
+                                <input type="password" id="reg-password" class="input-control" placeholder="Min 6 characters" minlength="6" required>
+                                <i class="fa-solid fa-key field-icon"></i>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reg-confirm-password"><i class="fa-solid fa-check-double"></i> Confirm</label>
+                            <div class="input-icon-wrap">
+                                <input type="password" id="reg-confirm-password" class="input-control" placeholder="Re-type password" minlength="6" required>
+                                <i class="fa-solid fa-shield field-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="btn-reg-submit" class="btn-primary-portal" style="background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));">
+                        <i class="fa-solid fa-user-check"></i> Register New Patient
+                    </button>
+                </form>
+
+                <div class="guest-link-wrap">
+                    <a href="#" onclick="switchPortalTab('login'); return false;">
+                        Already registered? <span style="color:var(--accent-cyan); font-weight:600;">Sign in here</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchPortalTab(tab) {
+            const loginBtn = document.getElementById('tab-btn-login');
+            const regBtn = document.getElementById('tab-btn-register');
+            const loginView = document.getElementById('view-login');
+            const regView = document.getElementById('view-register');
+            clearAlert();
+
+            if (tab === 'login') {
+                loginBtn.classList.add('active');
+                regBtn.classList.remove('active');
+                loginView.classList.add('active');
+                regView.classList.remove('active');
+            } else {
+                regBtn.classList.add('active');
+                loginBtn.classList.remove('active');
+                regView.classList.add('active');
+                loginView.classList.remove('active');
+            }
+        }
+
+        function showAlert(msg, type = 'error') {
+            const banner = document.getElementById('portal-alert');
+            const icon = document.getElementById('alert-icon');
+            const msgSpan = document.getElementById('alert-msg');
+
+            banner.className = `alert-banner ${type}`;
+            icon.className = type === 'error' ? 'fa-solid fa-circle-exclamation' : 'fa-solid fa-circle-check';
+            msgSpan.textContent = msg;
+            banner.style.display = 'flex';
+        }
+
+        function clearAlert() {
+            const banner = document.getElementById('portal-alert');
+            banner.style.display = 'none';
+        }
+
+        function togglePasswordVisibility(fieldId, btn) {
+            const input = document.getElementById(fieldId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fa-solid fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fa-solid fa-eye';
+            }
+        }
+
+        function fillDemoCredentials() {
+            document.getElementById('login-identifier').value = 'John Doe';
+            document.getElementById('login-password').value = 'patient123';
+            showAlert('Demo credentials filled: Name "John Doe" / Password "patient123"', 'success');
+        }
+
+        async function oneClickDemoLogin() {
+            fillDemoCredentials();
+            await performLogin('John Doe', 'patient123');
+        }
+
+        async function handlePatientLogin(e) {
+            e.preventDefault();
+            const identifier = document.getElementById('login-identifier').value.trim();
+            const password = document.getElementById('login-password').value;
+            await performLogin(identifier, password);
+        }
+
+        async function performLogin(identifier, password) {
+            const btn = document.getElementById('btn-login-submit');
+            const origHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...';
+            clearAlert();
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ identifier, password })
+                });
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    showAlert(`Welcome back, ${data.patient.name}! Redirecting to dashboard...`, 'success');
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 800);
+                } else {
+                    showAlert(data.error || 'Authentication failed. Check your ID and password.', 'error');
+                }
+            } catch (err) {
+                showAlert(`Network error: ${err.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = origHtml;
+            }
+        }
+
+        async function handlePatientRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const age = parseInt(document.getElementById('reg-age').value);
+            const gender = document.getElementById('reg-gender').value;
+            const blood_group = document.getElementById('reg-blood').value;
+            const phone = document.getElementById('reg-phone').value.trim();
+            const password = document.getElementById('reg-password').value;
+            const confirmPassword = document.getElementById('reg-confirm-password').value;
+
+            if (password !== confirmPassword) {
+                showAlert('Passwords do not match. Please verify.', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('btn-reg-submit');
+            const origHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Creating Account...';
+            clearAlert();
+
+            try {
+                const res = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, age, gender, blood_group, phone, password })
+                });
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    showAlert(`Account created! Assigned Patient ID: ${data.patient.patient_id}. Redirecting...`, 'success');
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1200);
+                } else {
+                    showAlert(data.error || 'Registration failed. Please check your information.', 'error');
+                }
+            } catch (err) {
+                showAlert(`Network error: ${err.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = origHtml;
+            }
+        }
+    </script>
+</body>
+</html>

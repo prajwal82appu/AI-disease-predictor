@@ -1,0 +1,12 @@
+[
+  {
+    "id": 1,
+    "patient_name": "Ramesh Kumar",
+    "disease": "Type 2 Diabetes Mellitus",
+    "severity": "Severe",
+    "risk_score": 99.4,
+    "prediction": "Type 2 Diabetes Mellitus Risk Identified",
+    "risk_level": "CRITICAL RISK",
+    "timestamp": "2026-09-08 21:47"
+  }
+]

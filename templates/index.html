@@ -1,0 +1,2296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Disease Prediction System — Major Project Phase 2</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #0b0f19;
+            --bg-secondary: #131b2e;
+            --bg-card: rgba(23, 32, 54, 0.7);
+            --border-glow: rgba(59, 130, 246, 0.2);
+            --accent-cyan: #06b6d4;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-emerald: #10b981;
+            --accent-rose: #f43f5e;
+            --accent-amber: #f59e0b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(6, 182, 212, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(139, 92, 246, 0.08) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+        }
+
+        .brand-title {
+            font-size: 18px;
+            font-weight: 700;
+            line-height: 1.2;
+            background: linear-gradient(to right, #ffffff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-subtitle {
+            font-size: 11px;
+            color: var(--accent-cyan);
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            border: 1px solid transparent;
+        }
+
+        .nav-item:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .nav-item.active {
+            color: white;
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(139, 92, 246, 0.15));
+            border-color: rgba(6, 182, 212, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-item i {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .author-box {
+            margin-top: auto;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .author-box h4 {
+            color: var(--text-primary);
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .page-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .page-title p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .badge-metrics {
+            display: flex;
+            gap: 12px;
+        }
+
+        .metric-pill {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .metric-pill span.val {
+            color: var(--accent-emerald);
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Tab Panels */
+        .tab-panel {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Grid Layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title i {
+            color: var(--accent-cyan);
+        }
+
+        /* Form Inputs */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .form-control {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 10px 14px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+        }
+
+        /* Preset Buttons */
+        .btn-group-presets {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn-preset {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-preset:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .btn-preset.danger:hover {
+            border-color: var(--accent-rose);
+            color: var(--accent-rose);
+        }
+
+        .btn-preset.success:hover {
+            border-color: var(--accent-emerald);
+            color: var(--accent-emerald);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(6, 182, 212, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(6, 182, 212, 0.5);
+        }
+
+        /* Prediction Result Box */
+        .result-box {
+            display: none;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 24px;
+        }
+
+        .result-box.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .result-badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        .result-badge.positive {
+            background: rgba(244, 63, 94, 0.2);
+            color: var(--accent-rose);
+            border: 1px solid var(--accent-rose);
+        }
+
+        .result-badge.negative {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent-emerald);
+            border: 1px solid var(--accent-emerald);
+        }
+
+        .progress-bar-wrap {
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 12px 0 20px 0;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 1s ease;
+            border-radius: 6px;
+        }
+
+        .risk-factor-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .risk-factor-item {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 3px solid var(--accent-amber);
+            padding: 8px 12px;
+            border-radius: 0 6px 6px 0;
+            font-size: 13px;
+        }
+
+        /* Image Dropzone */
+        .dropzone {
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(15, 23, 42, 0.4);
+        }
+
+        .dropzone:hover {
+            border-color: var(--accent-cyan);
+            background: rgba(6, 182, 212, 0.05);
+        }
+
+        .dropzone i {
+            font-size: 48px;
+            color: var(--accent-cyan);
+            margin-bottom: 12px;
+        }
+
+        /* Stats Cards Overview */
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .stat-icon.cyan { background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan); }
+        .stat-icon.purple { background: rgba(139, 92, 246, 0.15); color: var(--accent-purple); }
+        .stat-icon.emerald { background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); }
+
+        .stat-val { font-size: 24px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+        .stat-lbl { font-size: 13px; color: var(--text-secondary); }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        th {
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Patient Authentication & Dossier Styles */
+        .patient-auth-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-patient-login-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(139, 92, 246, 0.2));
+            border: 1px solid rgba(6, 182, 212, 0.5);
+            color: #f8fafc;
+            padding: 9px 18px;
+            border-radius: 24px;
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.25);
+            cursor: pointer;
+        }
+
+        .btn-patient-login-cta:hover {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            color: #0b0f19;
+            box-shadow: 0 0 25px rgba(6, 182, 212, 0.6);
+            transform: translateY(-1px);
+        }
+
+        .patient-user-chip {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(23, 32, 54, 0.9);
+            border: 1px solid rgba(6, 182, 212, 0.35);
+            padding: 6px 14px 6px 8px;
+            border-radius: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .patient-avatar-circle {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 15px;
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+        }
+
+        .patient-info-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.15;
+        }
+
+        .patient-name-span {
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+
+        .patient-id-span {
+            font-size: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-cyan);
+        }
+
+        .btn-logout-small {
+            background: rgba(244, 63, 94, 0.15);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+            color: var(--accent-rose);
+            padding: 5px 12px;
+            border-radius: 16px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-logout-small:hover {
+            background: var(--accent-rose);
+            color: white;
+        }
+
+        .patient-sidebar-widget {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 14px;
+            margin-top: 10px;
+        }
+
+        .patient-sidebar-widget.logged-in {
+            border-color: rgba(6, 182, 212, 0.3);
+            background: linear-gradient(145deg, rgba(6, 182, 212, 0.08), rgba(139, 92, 246, 0.08));
+        }
+
+        .patient-card-dossier {
+            background: var(--bg-card);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            border-radius: 18px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .patient-card-dossier::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .patient-id-badge {
+            background: rgba(6, 182, 212, 0.15);
+            border: 1px solid rgba(6, 182, 212, 0.4);
+            color: var(--accent-cyan);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="brand">
+            <div class="brand-icon"><i class="fa-solid fa-heart-pulse"></i></div>
+            <div>
+                <div class="brand-title">AI Disease Predictor</div>
+                <div class="brand-subtitle">Major Project Phase 2</div>
+            </div>
+        </div>
+
+        <div class="nav-menu">
+            <div class="nav-item active" onclick="switchTab('overview', this)">
+                <i class="fa-solid fa-chart-line"></i> Dashboard Overview
+            </div>
+            <div class="nav-item" id="nav-item-dossier" onclick="switchTab('dossier', this)">
+                <i class="fa-solid fa-address-card" style="color:var(--accent-cyan)"></i> Patient Health Dossier
+            </div>
+            <div class="nav-item" onclick="switchTab('ckd', this)">
+                <i class="fa-solid fa-droplet"></i> Chronic Kidney Disease
+            </div>
+            <div class="nav-item" onclick="switchTab('parkinsons', this)">
+                <i class="fa-solid fa-brain"></i> Parkinson's Disease
+            </div>
+            <div class="nav-item" onclick="switchTab('diabetes', this)">
+                <i class="fa-solid fa-syringe"></i> Diabetes Mellitus
+            </div>
+            <div class="nav-item" onclick="switchTab('heart', this)">
+                <i class="fa-solid fa-heart-pulse"></i> Heart Disease
+            </div>
+            <div class="nav-item" onclick="switchTab('cancer', this)">
+                <i class="fa-solid fa-ribbon" style="color:#f472b6"></i> Breast Cancer (WDBC)
+            </div>
+            <div class="nav-item" onclick="switchTab('image', this)">
+                <i class="fa-solid fa-x-ray"></i> Image Diagnostic (CNN)
+            </div>
+            <div class="nav-item" onclick="switchTab('manual', this)">
+                <i class="fa-solid fa-notes-medical"></i> Manual Disease Entry
+            </div>
+            <div class="nav-item" onclick="switchTab('benchmarks', this)">
+                <i class="fa-solid fa-sliders"></i> Model Benchmarks
+            </div>
+        </div>
+
+        <!-- Dynamic Patient Session Widget in Sidebar -->
+        <div id="sidebar-patient-container" style="margin-top: auto;">
+            <!-- Populated dynamically via JS -->
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header-bar">
+            <div class="page-title">
+                <h1>Unified Medical AI Diagnostics Platform</h1>
+                <p>Early Disease Detection using Multi-Modal Machine Learning & Deep CNN Ensembles</p>
+            </div>
+            <div style="display:flex; align-items:center; gap:16px;">
+                <div class="badge-metrics" style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <div class="metric-pill"><i class="fa-solid fa-shield-halved" style="color:var(--accent-cyan)"></i> CKD: <span class="val">99.17%</span></div>
+                    <div class="metric-pill"><i class="fa-solid fa-bolt" style="color:var(--accent-purple)"></i> Parkinson's: <span class="val">98.31%</span></div>
+                    <div class="metric-pill"><i class="fa-solid fa-syringe" style="color:var(--accent-amber)"></i> Diabetes: <span class="val">98.75%</span></div>
+                    <div class="metric-pill"><i class="fa-solid fa-heart-pulse" style="color:var(--accent-rose)"></i> Heart: <span class="val">98.50%</span></div>
+                    <div class="metric-pill"><i class="fa-solid fa-ribbon" style="color:#f472b6"></i> Cancer: <span class="val">98.25%</span></div>
+                    <div class="metric-pill"><i class="fa-solid fa-layer-group" style="color:var(--accent-emerald)"></i> CNN: <span class="val">94.30%</span></div>
+                </div>
+                <!-- Dynamic Patient Header Slot -->
+                <div id="header-patient-slot">
+                    <a href="/login" class="btn-patient-login-cta">
+                        <i class="fa-solid fa-user-lock"></i> Patient Login
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1. OVERVIEW TAB -->
+        <div id="tab-overview" class="tab-panel active">
+            <div class="grid-3 mb-24">
+                <div class="stat-card">
+                    <div class="stat-icon cyan"><i class="fa-solid fa-microscope"></i></div>
+                    <div>
+                        <div class="stat-val">99.17%</div>
+                        <div class="stat-lbl">Random Forest CKD Model</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple"><i class="fa-solid fa-waveform"></i></div>
+                    <div>
+                        <div class="stat-val">98.31%</div>
+                        <div class="stat-lbl">XGBoost Vocal Parkinson's</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:rgba(245, 158, 11, 0.15); color:var(--accent-amber);"><i class="fa-solid fa-syringe"></i></div>
+                    <div>
+                        <div class="stat-val">98.75%</div>
+                        <div class="stat-lbl">Random Forest Diabetes</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:rgba(244, 63, 94, 0.15); color:var(--accent-rose);"><i class="fa-solid fa-heart-pulse"></i></div>
+                    <div>
+                        <div class="stat-val">98.50%</div>
+                        <div class="stat-lbl">Gradient Boosting Heart</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:rgba(244, 114, 182, 0.15); color:#f472b6;"><i class="fa-solid fa-ribbon"></i></div>
+                    <div>
+                        <div class="stat-val">98.25%</div>
+                        <div class="stat-lbl">Random Forest WDBC Cancer</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon emerald"><i class="fa-solid fa-dna"></i></div>
+                    <div>
+                        <div class="stat-val">94.30%</div>
+                        <div class="stat-lbl">Deep CNN Spatial X-Ray</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fa-solid fa-circle-nodes"></i> System Architecture & Pipeline</div>
+                </div>
+                <p style="color:var(--text-secondary); line-height:1.6; margin-bottom:16px;">
+                    This platform integrates clinical EHR lab records, vocal frequency time-series, glycemic panels, cardiac markers, and medical spatial imaging into a unified single-dashboard diagnostic engine.
+                </p>
+                <div class="grid-3" style="margin-top:20px;">
+                    <div style="background:rgba(255,255,255,0.02); padding:16px; border-radius:12px; border:1px solid rgba(255,255,255,0.06);">
+                        <h4 style="color:var(--accent-cyan); margin-bottom:8px;"><i class="fa-solid fa-vial"></i> 1. Renal Biomarkers</h4>
+                        <p style="font-size:13px; color:var(--text-secondary)">Processes 16 clinical parameters including Serum Creatinine, Albumin, & Hemoglobin via Random Forest Ensemble.</p>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.02); padding:16px; border-radius:12px; border:1px solid rgba(255,255,255,0.06);">
+                        <h4 style="color:var(--accent-purple); margin-bottom:8px;"><i class="fa-solid fa-microphone-lines"></i> 2. Acoustic Tremor</h4>
+                        <p style="font-size:13px; color:var(--text-secondary)">Evaluates vocal fundamental frequencies (MDVP Fo/Fhi/Flo), Jitter, & Shimmer via XGBoost Gradient Boosting.</p>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.02); padding:16px; border-radius:12px; border:1px solid rgba(255,255,255,0.06);">
+                        <h4 style="color:var(--accent-amber); margin-bottom:8px;"><i class="fa-solid fa-syringe"></i> 3. Glycemic Panel</h4>
+                        <p style="font-size:13px; color:var(--text-secondary)">Analyzes Fasting Glucose, Serum Insulin, BMI, & Diabetes Pedigree score via Random Forest Classifier.</p>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.02); padding:16px; border-radius:12px; border:1px solid rgba(255,255,255,0.06);">
+                        <h4 style="color:var(--accent-rose); margin-bottom:8px;"><i class="fa-solid fa-heart-pulse"></i> 4. Cardiac Panel</h4>
+                        <p style="font-size:13px; color:var(--text-secondary)">Evaluates Resting BP, Serum Cholesterol, Max Heart Rate, & ST Depression via Gradient Boosting Classifier.</p>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.02); padding:16px; border-radius:12px; border:1px solid rgba(255,255,255,0.06);">
+                        <h4 style="color:#f472b6; margin-bottom:8px;"><i class="fa-solid fa-ribbon"></i> 5. Nuclear Morphometry</h4>
+                        <p style="font-size:13px; color:var(--text-secondary)">Evaluates 10 mean nuclear characteristics (Radius, Perimeter, Concavity, Compactness) via Random Forest WDBC model.</p>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.02); padding:16px; border-radius:12px; border:1px solid rgba(255,255,255,0.06);">
+                        <h4 style="color:var(--accent-emerald); margin-bottom:8px;"><i class="fa-solid fa-file-waveform"></i> 6. Spatial CNN Scan</h4>
+                        <p style="font-size:13px; color:var(--text-secondary)">Extracts 2D feature maps from lung X-ray & CT scans for pulmonary opacity and consolidation scoring.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fa-solid fa-scale-balanced"></i> Safe vs. At Risk Classification Threshold Matrix</div>
+                </div>
+                <p style="color:var(--text-secondary); line-height:1.6; margin-bottom:16px;">
+                    The system evaluates real-time clinical parameters against trained decision thresholds to distinguish between <strong>SAFE (Low Risk / Healthy)</strong> and <strong>AT RISK (Disease Detected / Critical)</strong> profiles:
+                </p>
+                <div style="overflow-x:auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Disease Module</th>
+                                <th>Key Biomarkers / Parameters</th>
+                                <th>🟢 SAFE (Low Risk / Healthy)</th>
+                                <th>🔴 AT RISK (Disease / Critical)</th>
+                                <th>Primary Diagnostic Test</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong style="color:var(--accent-cyan)">Chronic Kidney Disease (CKD)</strong></td>
+                                <td>Serum Creatinine, Albumin, Blood Urea, Hemoglobin</td>
+                                <td><span style="color:var(--accent-emerald); font-weight:600">Creatinine &lt; 1.2 mg/dL, Albumin = 0, Hemoglobin &gt; 13 g/dL</span></td>
+                                <td><span style="color:var(--accent-rose); font-weight:600">Creatinine &gt; 1.4 mg/dL, Albumin ≥ 1+, Hemoglobin &lt; 11 g/dL</span></td>
+                                <td>eGFR & Serum Creatinine Clearance</td>
+                            </tr>
+                            <tr>
+                                <td><strong style="color:var(--accent-purple)">Parkinson's Disease</strong></td>
+                                <td>MDVP Vocal Jitter, Shimmer, NHR, PPE</td>
+                                <td><span style="color:var(--accent-emerald); font-weight:600">Jitter &lt; 0.006, Shimmer &lt; 0.03, NHR &lt; 0.02, PPE &lt; 0.15</span></td>
+                                <td><span style="color:var(--accent-rose); font-weight:600">Jitter &gt; 0.008, Shimmer &gt; 0.04, NHR &gt; 0.05, PPE &gt; 0.25</span></td>
+                                <td>DaTscan SPECT & UPDRS Motor Exam</td>
+                            </tr>
+                            <tr>
+                                <td><strong style="color:var(--accent-amber)">Type 2 Diabetes Mellitus</strong></td>
+                                <td>Fasting Glucose, HbA1c, Serum Insulin, BMI</td>
+                                <td><span style="color:var(--accent-emerald); font-weight:600">Fasting Glucose &lt; 100 mg/dL, HbA1c &lt; 5.7%, BMI &lt; 25.0</span></td>
+                                <td><span style="color:var(--accent-rose); font-weight:600">Fasting Glucose &gt; 126 mg/dL, HbA1c &gt; 6.5%, BMI &gt; 30.0</span></td>
+                                <td>HbA1c & Oral Glucose Tolerance Test (OGTT)</td>
+                            </tr>
+                            <tr>
+                                <td><strong style="color:var(--accent-rose)">Cardiovascular / Heart Disease</strong></td>
+                                <td>Resting Blood Pressure, Serum Cholesterol, ST Depression, Max HR</td>
+                                <td><span style="color:var(--accent-emerald); font-weight:600">BP &lt; 120/80 mmHg, Cholesterol &lt; 200 mg/dL, ST &lt; 1.0 mm</span></td>
+                                <td><span style="color:var(--accent-rose); font-weight:600">BP &gt; 140/90 mmHg, Cholesterol &gt; 240 mg/dL, ST &gt; 2.0 mm</span></td>
+                                <td>12-Lead ECG & Coronary CT Angiography</td>
+                            </tr>
+                            <tr>
+                                <td><strong style="color:#f472b6">Breast Cancer / Carcinoma (WDBC)</strong></td>
+                                <td>Mean Radius, Perimeter, Concavity, Concave Points, Compactness</td>
+                                <td><span style="color:var(--accent-emerald); font-weight:600">Radius &lt; 13.0 mm, Perimeter &lt; 85 mm, Concavity &lt; 0.05</span></td>
+                                <td><span style="color:var(--accent-rose); font-weight:600">Radius &gt; 15.0 mm, Perimeter &gt; 100 mm, Concavity &gt; 0.10</span></td>
+                                <td>Core Needle Biopsy & Mammography (BI-RADS)</td>
+                            </tr>
+                            <tr>
+                                <td><strong style="color:var(--accent-emerald)">Pulmonary Image CNN</strong></td>
+                                <td>Spatial Feature Density, Opacity Index, Contrast</td>
+                                <td><span style="color:var(--accent-emerald); font-weight:600">Clear lung parenchyma, Opacity Density Index &lt; 0.40</span></td>
+                                <td><span style="color:var(--accent-rose); font-weight:600">Lower lung consolidation, Opacity Density Index &gt; 0.55</span></td>
+                                <td>High-Resolution HRCT Chest Scan</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Major Project Team & Academic Guidance Card -->
+            <div class="card" style="margin-top: 24px; border: 1px solid rgba(6, 182, 212, 0.25); background: linear-gradient(145deg, rgba(23, 32, 54, 0.8), rgba(15, 23, 42, 0.9)); position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 0; right: 0; width: 300px; height: 300px; background: radial-gradient(circle, rgba(139, 92, 246, 0.12) 0%, transparent 70%); pointer-events: none;"></div>
+                
+                <div class="card-header" style="border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 16px; margin-bottom: 22px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 12px;">
+                        <div>
+                            <div class="card-title" style="margin-bottom: 4px; font-size: 18px;">
+                                <i class="fa-solid fa-graduation-cap" style="color: var(--accent-cyan);"></i> Major Project Academic Team & Supervision
+                            </div>
+                            <p style="color: var(--text-secondary); font-size: 13px;">
+                                Department of Computer Science & Engineering — R.L. Jalappa Institute of Technology (RLJIT)
+                            </p>
+                        </div>
+                        <div style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(139, 92, 246, 0.15)); border: 1px solid rgba(6, 182, 212, 0.35); color: var(--text-primary); padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-award" style="color: var(--accent-cyan);"></i> Major Project Phase 2
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px;">
+                    <!-- Project Guide Card -->
+                    <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 14px; padding: 18px; display: flex; align-items: center; gap: 14px; position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: linear-gradient(to bottom, var(--accent-cyan), var(--accent-blue));"></div>
+                        <div style="width: 50px; height: 50px; border-radius: 12px; background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.35); color: var(--accent-cyan); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);">
+                            <i class="fa-solid fa-chalkboard-user"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 11px; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 0.8px;">Project Guide</div>
+                            <div style="font-size: 16px; font-weight: 700; color: var(--text-primary); margin-top: 2px;">Mrs. Yele Devika</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">Dept. of CSE, RLJIT</div>
+                        </div>
+                    </div>
+
+                    <!-- Team Member 1 -->
+                    <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 18px; display: flex; align-items: center; gap: 14px; transition: all 0.2s ease;">
+                        <div style="width: 50px; height: 50px; border-radius: 12px; background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.3); color: var(--accent-purple); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
+                            <i class="fa-solid fa-user-graduate"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 11px; font-weight: 700; color: var(--accent-purple); text-transform: uppercase; letter-spacing: 0.8px;">Project Team Member</div>
+                            <div style="font-size: 15px; font-weight: 700; color: var(--text-primary); margin-top: 2px;">Poornachandra D S</div>
+                            <div style="font-size: 12px; font-family: 'JetBrains Mono', monospace; color: var(--accent-cyan); margin-top: 2px;">USN: 1RL23CS098</div>
+                        </div>
+                    </div>
+
+                    <!-- Team Member 2 -->
+                    <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 18px; display: flex; align-items: center; gap: 14px; transition: all 0.2s ease;">
+                        <div style="width: 50px; height: 50px; border-radius: 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--accent-emerald); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
+                            <i class="fa-solid fa-user-graduate"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 11px; font-weight: 700; color: var(--accent-emerald); text-transform: uppercase; letter-spacing: 0.8px;">Project Team Member</div>
+                            <div style="font-size: 15px; font-weight: 700; color: var(--text-primary); margin-top: 2px;">Prajwal B T</div>
+                            <div style="font-size: 12px; font-family: 'JetBrains Mono', monospace; color: var(--accent-cyan); margin-top: 2px;">USN: 1RL23CS102</div>
+                        </div>
+                    </div>
+
+                    <!-- Team Member 3 -->
+                    <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 18px; display: flex; align-items: center; gap: 14px; transition: all 0.2s ease;">
+                        <div style="width: 50px; height: 50px; border-radius: 12px; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); color: var(--accent-amber); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
+                            <i class="fa-solid fa-user-graduate"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 11px; font-weight: 700; color: var(--accent-amber); text-transform: uppercase; letter-spacing: 0.8px;">Project Team Member</div>
+                            <div style="font-size: 15px; font-weight: 700; color: var(--text-primary); margin-top: 2px;">Prajwal M</div>
+                            <div style="font-size: 12px; font-family: 'JetBrains Mono', monospace; color: var(--accent-cyan); margin-top: 2px;">USN: 1RL23CS104</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. CKD TAB -->
+        <div id="tab-ckd" class="tab-panel">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fa-solid fa-droplet"></i> Chronic Kidney Disease (CKD) Predictor</div>
+                    <div class="btn-group-presets">
+                        <button class="btn-preset danger" onclick="loadSample('ckd', 'high_risk')"><i class="fa-solid fa-triangle-exclamation"></i> High Risk Patient</button>
+                        <button class="btn-preset success" onclick="loadSample('ckd', 'healthy')"><i class="fa-solid fa-check"></i> Healthy Patient</button>
+                    </div>
+                </div>
+
+                <form id="ckd-form">
+                    <div class="form-grid mb-24">
+                        <div class="form-group"><label>Age (years)</label><input type="number" id="ckd-age" class="form-control" value="50"></div>
+                        <div class="form-group"><label>Blood Pressure (mm/Hg)</label><input type="number" id="ckd-bp" class="form-control" value="80"></div>
+                        <div class="form-group"><label>Specific Gravity (sg)</label><input type="number" step="0.005" id="ckd-sg" class="form-control" value="1.020"></div>
+                        <div class="form-group"><label>Albumin (0-5)</label><input type="number" id="ckd-al" class="form-control" value="0"></div>
+                        <div class="form-group"><label>Sugar (0-5)</label><input type="number" id="ckd-su" class="form-control" value="0"></div>
+                        <div class="form-group"><label>Blood Glucose (mg/dL)</label><input type="number" id="ckd-bgr" class="form-control" value="120"></div>
+                        <div class="form-group"><label>Blood Urea (mg/dL)</label><input type="number" id="ckd-bu" class="form-control" value="30"></div>
+                        <div class="form-group"><label>Serum Creatinine (mg/dL)</label><input type="number" step="0.1" id="ckd-sc" class="form-control" value="1.1"></div>
+                        <div class="form-group"><label>Sodium (mEq/L)</label><input type="number" id="ckd-sod" class="form-control" value="138"></div>
+                        <div class="form-group"><label>Potassium (mEq/L)</label><input type="number" step="0.1" id="ckd-pot" class="form-control" value="4.5"></div>
+                        <div class="form-group"><label>Hemoglobin (g/dL)</label><input type="number" step="0.1" id="ckd-hemo" class="form-control" value="13.5"></div>
+                        <div class="form-group"><label>Packed Cell Vol (%)</label><input type="number" id="ckd-pcv" class="form-control" value="40"></div>
+                        <div class="form-group"><label>WBC Count (cells/cu.mm)</label><input type="number" id="ckd-wbcc" class="form-control" value="7800"></div>
+                        <div class="form-group"><label>RBC Count (millions/cmm)</label><input type="number" step="0.1" id="ckd-rbcc" class="form-control" value="4.8"></div>
+                        <div class="form-group"><label>Hypertension (1=Yes, 0=No)</label><input type="number" id="ckd-htn" class="form-control" value="0"></div>
+                        <div class="form-group"><label>Diabetes Mellitus (1=Yes, 0=No)</label><input type="number" id="ckd-dm" class="form-control" value="0"></div>
+                    </div>
+
+                    <button type="button" class="btn-primary" onclick="runCKDPrediction()"><i class="fa-solid fa-laptop-medical"></i> Run Random Forest CKD Analysis</button>
+                </form>
+
+                <div id="ckd-result" class="result-box"></div>
+            </div>
+        </div>
+
+        <!-- 3. PARKINSONS TAB -->
+        <div id="tab-parkinsons" class="tab-panel">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fa-solid fa-brain"></i> Parkinson's Disease Acoustic Tremor Diagnostics</div>
+                    <div class="btn-group-presets">
+                        <button class="btn-preset danger" onclick="loadSample('parkinsons', 'high_risk')"><i class="fa-solid fa-triangle-exclamation"></i> High Risk Sample</button>
+                        <button class="btn-preset success" onclick="loadSample('parkinsons', 'healthy')"><i class="fa-solid fa-check"></i> Normal Sample</button>
+                    </div>
+                </div>
+
+                <form id="park-form">
+                    <div class="form-grid mb-24">
+                        <div class="form-group"><label>MDVP:Fo (Hz)</label><input type="number" step="0.001" id="park-fo" class="form-control" value="150"></div>
+                        <div class="form-group"><label>MDVP:Fhi (Hz)</label><input type="number" step="0.001" id="park-fhi" class="form-control" value="190"></div>
+                        <div class="form-group"><label>MDVP:Flo (Hz)</label><input type="number" step="0.001" id="park-flo" class="form-control" value="110"></div>
+                        <div class="form-group"><label>MDVP:Jitter (%)</label><input type="number" step="0.00001" id="park-jitter" class="form-control" value="0.005"></div>
+                        <div class="form-group"><label>MDVP:Shimmer</label><input type="number" step="0.00001" id="park-shimmer" class="form-control" value="0.025"></div>
+                        <div class="form-group"><label>NHR (Noise-to-Harmonics)</label><input type="number" step="0.00001" id="park-nhr" class="form-control" value="0.02"></div>
+                        <div class="form-group"><label>HNR (Harmonics-to-Noise)</label><input type="number" step="0.1" id="park-hnr" class="form-control" value="22.0"></div>
+                        <div class="form-group"><label>RPDE (Recurrence Period)</label><input type="number" step="0.001" id="park-rpde" class="form-control" value="0.45"></div>
+                        <div class="form-group"><label>DFA (Detrended Fluctuation)</label><input type="number" step="0.001" id="park-dfa" class="form-control" value="0.70"></div>
+                        <div class="form-group"><label>Spread1 (Fundamental Variation)</label><input type="number" step="0.001" id="park-spread1" class="form-control" value="-5.5"></div>
+                        <div class="form-group"><label>Spread2 (Nonlinear Dynamics)</label><input type="number" step="0.001" id="park-spread2" class="form-control" value="0.20"></div>
+                        <div class="form-group"><label>PPE (Pitch Period Entropy)</label><input type="number" step="0.001" id="park-ppe" class="form-control" value="0.18"></div>
+                    </div>
+
+                    <button type="button" class="btn-primary" onclick="runParkinsonsPrediction()"><i class="fa-solid fa-microchip"></i> Run XGBoost Vocal Analysis</button>
+                </form>
+
+                <div id="park-result" class="result-box"></div>
+            </div>
+        </div>
+
+        <!-- 4. DIABETES TAB -->
+        <div id="tab-diabetes" class="tab-panel">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fa-solid fa-syringe"></i> Type 2 Diabetes Mellitus Predictor</div>
+                    <div class="btn-group-presets">
+                        <button class="btn-preset danger" onclick="loadSample('diabetes', 'high_risk')"><i class="fa-solid fa-triangle-exclamation"></i> High Risk Sample</button>
+                        <button class="btn-preset success" onclick="loadSample('diabetes', 'healthy')"><i class="fa-solid fa-check"></i> Normal Sample</button>
+                    </div>
+                </div>
+
+                <form id="diabetes-form">
+                    <div class="form-grid mb-24">
+                        <div class="form-group"><label>Pregnancies</label><input type="number" id="diab-pregnancies" class="form-control" value="1"></div>
+                        <div class="form-group"><label>Glucose Level (mg/dL)</label><input type="number" id="diab-glucose" class="form-control" value="120"></div>
+                        <div class="form-group"><label>Blood Pressure (mmHg)</label><input type="number" id="diab-bp" class="form-control" value="70"></div>
+                        <div class="form-group"><label>Skin Thickness (mm)</label><input type="number" id="diab-skin_thickness" class="form-control" value="20"></div>
+                        <div class="form-group"><label>Insulin Level (µU/mL)</label><input type="number" id="diab-insulin" class="form-control" value="80"></div>
+                        <div class="form-group"><label>BMI (kg/m²)</label><input type="number" step="0.1" id="diab-bmi" class="form-control" value="32.0"></div>
+                        <div class="form-group"><label>Diabetes Pedigree Function</label><input type="number" step="0.01" id="diab-dpf" class="form-control" value="0.47"></div>
+                        <div class="form-group"><label>Age (years)</label><input type="number" id="diab-age" class="form-control" value="33"></div>
+                    </div>
+
+                    <button type="button" class="btn-primary" onclick="runDiabetesPrediction()"><i class="fa-solid fa-microchip"></i> Run Random Forest Diabetes Analysis</button>
+                </form>
+
+                <div id="diabetes-result" class="result-box"></div>
+            </div>
+        </div>
+
+        <!-- 5. HEART DISEASE TAB -->
+        <div id="tab-heart" class="tab-panel">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fa-solid fa-heart-pulse"></i> Cardiovascular & Heart Disease Predictor</div>
+                    <div class="btn-group-presets">
+                        <button class="btn-preset danger" onclick="loadSample('heart', 'high_risk')"><i class="fa-solid fa-triangle-exclamation"></i> High Risk Patient</button>
+                        <button class="btn-preset success" onclick="loadSample('heart', 'healthy')"><i class="fa-solid fa-check"></i> Healthy Patient</button>
+                    </div>
+                </div>
+
+                <form id="heart-form">
+                    <div class="form-grid mb-24">
+                        <div class="form-group"><label>Age (years)</label><input type="number" id="heart-age" class="form-control" value="54"></div>
+                        <div class="form-group"><label>Sex (1=Male, 0=Female)</label><input type="number" id="heart-sex" class="form-control" value="1"></div>
+                        <div class="form-group"><label>Chest Pain Type (0-3)</label><input type="number" id="heart-cp" class="form-control" value="0"></div>
+                        <div class="form-group"><label>Resting BP (mmHg)</label><input type="number" id="heart-trestbps" class="form-control" value="130"></div>
+                        <div class="form-group"><label>Serum Cholesterol (mg/dL)</label><input type="number" id="heart-chol" class="form-control" value="240"></div>
+                        <div class="form-group"><label>Fasting Blood Sugar > 120 (1=Yes, 0=No)</label><input type="number" id="heart-fbs" class="form-control" value="0"></div>
+                        <div class="form-group"><label>Resting ECG Results (0-2)</label><input type="number" id="heart-restecg" class="form-control" value="0"></div>
+                        <div class="form-group"><label>Max Heart Rate Achieved (bpm)</label><input type="number" id="heart-thalach" class="form-control" value="150"></div>
+                        <div class="form-group"><label>Exercise Angina (1=Yes, 0=No)</label><input type="number" id="heart-exang" class="form-control" value="0"></div>
+                        <div class="form-group"><label>ST Depression (oldpeak mm)</label><input type="number" step="0.1" id="heart-oldpeak" class="form-control" value="1.0"></div>
+                        <div class="form-group"><label>ST Slope (0-2)</label><input type="number" id="heart-slope" class="form-control" value="1"></div>
+                        <div class="form-group"><label>Major Vessels (ca 0-4)</label><input type="number" id="heart-ca" class="form-control" value="0"></div>
+                        <div class="form-group"><label>Thalassemia (0-3)</label><input type="number" id="heart-thal" class="form-control" value="2"></div>
+                    </div>
+
+                    <button type="button" class="btn-primary" onclick="runHeartPrediction()"><i class="fa-solid fa-heart-circle-check"></i> Run Gradient Boosting Heart Analysis</button>
+                </form>
+
+                <div id="heart-result" class="result-box"></div>
+            </div>
+        </div>
+
+        <!-- 6. CANCER TAB -->
+        <div id="tab-cancer" class="tab-panel">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fa-solid fa-ribbon" style="color:#f472b6"></i> Breast Cancer (WDBC) Nuclear Morphometry Predictor</div>
+                    <div class="btn-group-presets">
+                        <button class="btn-preset danger" onclick="loadSample('cancer', 'high_risk')"><i class="fa-solid fa-triangle-exclamation"></i> Malignant Sample</button>
+                        <button class="btn-preset success" onclick="loadSample('cancer', 'healthy')"><i class="fa-solid fa-check"></i> Benign Sample</button>
+                    </div>
+                </div>
+
+                <p style="color:var(--text-secondary); font-size:14px; margin-bottom:20px; line-height:1.5;">
+                    Wisconsin Diagnostic Breast Cancer (WDBC) classification using digitized fine needle aspirate (FNA) cell nuclei features. Evaluates 10 mean geometric and morphologic parameters to detect malignant neoplasm vs. benign breast lesions.
+                </p>
+
+                <form id="cancer-form">
+                    <div class="form-grid mb-24">
+                        <div class="form-group"><label>Mean Radius (mm)</label><input type="number" step="0.01" id="cancer-radius_mean" class="form-control" value="14.13"></div>
+                        <div class="form-group"><label>Mean Texture (gray-scale)</label><input type="number" step="0.01" id="cancer-texture_mean" class="form-control" value="19.29"></div>
+                        <div class="form-group"><label>Mean Perimeter (mm)</label><input type="number" step="0.01" id="cancer-perimeter_mean" class="form-control" value="91.97"></div>
+                        <div class="form-group"><label>Mean Area (mm²)</label><input type="number" step="0.1" id="cancer-area_mean" class="form-control" value="654.89"></div>
+                        <div class="form-group"><label>Mean Smoothness (local var)</label><input type="number" step="0.0001" id="cancer-smoothness_mean" class="form-control" value="0.096"></div>
+                        <div class="form-group"><label>Mean Compactness (perim²/area-1)</label><input type="number" step="0.0001" id="cancer-compactness_mean" class="form-control" value="0.104"></div>
+                        <div class="form-group"><label>Mean Concavity (contour severity)</label><input type="number" step="0.0001" id="cancer-concavity_mean" class="form-control" value="0.089"></div>
+                        <div class="form-group"><label>Mean Concave Points</label><input type="number" step="0.0001" id="cancer-concave_points_mean" class="form-control" value="0.049"></div>
+                        <div class="form-group"><label>Mean Symmetry</label><input type="number" step="0.0001" id="cancer-symmetry_mean" class="form-control" value="0.181"></div>
+                        <div class="form-group"><label>Mean Fractal Dimension</label><input type="number" step="0.0001" id="cancer-fractal_dimension_mean" class="form-control" value="0.063"></div>
+                    </div>
+
+                    <button type="button" class="btn-primary" onclick="runCancerPrediction()"><i class="fa-solid fa-microscope"></i> Run Random Forest Cancer Morphometry Analysis</button>
+                </form>
+
+                <div id="cancer-result" class="result-box"></div>
+            </div>
+        </div>
+
+        <!-- 7. IMAGE & REAL-TIME PATIENT LAB REPORT TAB -->
+        <div id="tab-image" class="tab-panel">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fa-solid fa-file-medical"></i> Real-Time Patient Lab Report OCR & Image Diagnostic Engine</div>
+                    <div class="btn-group-presets">
+                        <button class="btn-preset" style="border-color:var(--accent-cyan); color:var(--accent-cyan);" onclick="loadSampleImage('patient_report_pdf')"><i class="fa-solid fa-file-pdf"></i> Sample PDF Lab Report</button>
+                        <button class="btn-preset" style="border-color:var(--accent-purple); color:var(--accent-purple);" onclick="loadSampleImage('patient_report')"><i class="fa-solid fa-file-invoice"></i> Sample Image Lab Report</button>
+                        <button class="btn-preset danger" onclick="loadSampleImage('pneumonia')"><i class="fa-solid fa-lungs-virus"></i> Sample Pneumonia Scan</button>
+                        <button class="btn-preset success" onclick="loadSampleImage('normal_xray')"><i class="fa-solid fa-lungs"></i> Sample Normal X-Ray</button>
+                    </div>
+                </div>
+
+                <p style="color:var(--text-secondary); font-size:14px; margin-bottom:16px; line-height:1.5;">
+                    Upload any patient lab report (PDF document or image scan: Blood Glucose, Renal Panel, Lipid Profile, Hemogram) or medical scan (Chest X-Ray / CT Scan). The multi-modal AI engine performs OCR text extraction, parses clinical parameters, and screens for CKD, Diabetes, Heart Disease, and Pulmonary opacity.
+                </p>
+
+                <!-- Document Mode Selector -->
+                <div style="display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap;">
+                    <button id="doc-type-btn-report" type="button" class="btn-preset active" style="padding:10px 18px; border-color:var(--accent-cyan); color:var(--accent-cyan); font-weight:600; background:rgba(6, 182, 212, 0.15);" onclick="selectDocType('report')">
+                        <i class="fa-solid fa-file-medical"></i> Patient Lab Report (Blood / Renal / Diabetes OCR)
+                    </button>
+                    <button id="doc-type-btn-xray" type="button" class="btn-preset" style="padding:10px 18px; font-weight:600;" onclick="selectDocType('xray')">
+                        <i class="fa-solid fa-lungs"></i> Chest X-Ray / CT Scan Diagnostic
+                    </button>
+                </div>
+                <input type="hidden" id="selected-doc-type" value="report">
+
+                <div class="dropzone" id="dropzone-area" onclick="document.getElementById('image-input').click()" ondragover="handleDragOver(event)" ondragenter="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleFileDrop(event)">
+                    <i class="fa-solid fa-cloud-arrow-up" style="font-size:36px; color:var(--accent-cyan); margin-bottom:8px;"></i>
+                    <h3>Upload Real-Time Patient Lab Report Document or Scan Image</h3>
+                    <p style="color:var(--text-secondary); font-size:13px; margin-top:4px;">Drag & drop or click to upload PDF, PNG, JPG, JPEG, BMP real-time Patient Blood/Renal/Diabetic Reports or X-Ray Scans</p>
+                    <input type="file" id="image-input" accept="image/*,.pdf,.doc,.docx" style="display:none" onchange="handleImageUpload(event)">
+                </div>
+
+                <div id="image-preview-wrap" style="display:none; margin-top:20px; text-align:center; background:rgba(15, 23, 42, 0.6); padding:20px; border-radius:12px; border:1px solid rgba(255,255,255,0.08);">
+                    <div id="file-info-badge" style="margin-bottom:12px; font-size:14px; font-weight:600; color:var(--accent-cyan);"></div>
+                    <img id="image-preview" style="max-height:280px; max-width:100%; border-radius:12px; border:2px solid rgba(6, 182, 212, 0.4); box-shadow:0 8px 24px rgba(0,0,0,0.4); display:none;">
+                    <div id="pdf-preview-icon" style="display:none; padding:30px; background:rgba(244, 63, 94, 0.1); border-radius:12px; border:1px dashed var(--accent-rose); margin:0 auto; max-width:300px;">
+                        <i class="fa-solid fa-file-pdf" style="font-size:48px; color:var(--accent-rose);"></i>
+                        <p style="margin-top:10px; font-weight:600; color:var(--text-primary);" id="pdf-file-name">Uploaded PDF Document</p>
+                        <p style="font-size:12px; color:var(--text-secondary);">Direct Text Stream Extraction Ready</p>
+                    </div>
+                    <div style="margin-top:16px;">
+                        <button class="btn-primary" style="max-width:420px; margin:0 auto;" onclick="runImageAnalysis()">
+                            <i class="fa-solid fa-microscope"></i> Run AI Patient Report OCR & Diagnostic
+                        </button>
+                    </div>
+                </div>
+
+                <div id="image-result" class="result-box"></div>
+            </div>
+        </div>
+
+        <!-- MANUAL DISEASE ENTRY TAB -->
+        <div id="tab-manual" class="tab-panel">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fa-solid fa-notes-medical"></i> Manual Patient & Disease Diagnostic Entry</div>
+                    <div class="btn-group-presets">
+                        <button class="btn-preset danger" onclick="loadManualPreset('diabetes')"><i class="fa-solid fa-syringe"></i> Diabetes Preset</button>
+                        <button class="btn-preset" style="border-color:var(--accent-amber); color:var(--accent-amber);" onclick="loadManualPreset('cardio')"><i class="fa-solid fa-heart-pulse"></i> Heart Disease Preset</button>
+                        <button class="btn-preset success" onclick="loadManualPreset('fatty_liver')"><i class="fa-solid fa-capsules"></i> Fatty Liver Preset</button>
+                        <button class="btn-preset" style="border-color:#f472b6; color:#f472b6;" onclick="loadManualPreset('oncology')"><i class="fa-solid fa-ribbon"></i> Oncology Preset</button>
+                        <button class="btn-preset" style="border-color:rgba(255,255,255,0.25); color:var(--text-secondary);" onclick="clearManualForm()"><i class="fa-solid fa-rotate-left"></i> Clear / Blank Form</button>
+                    </div>
+                </div>
+
+                <p style="color:var(--text-secondary); font-size:14px; margin-bottom:20px; line-height:1.5;">
+                    Manually enter a custom disease name, clinical symptoms, severity, and measured lab biomarkers to run real-time AI disease risk classification and generate clinical diagnostic recommendations.
+                </p>
+
+                <form id="manual-form" onsubmit="event.preventDefault(); runManualPrediction();">
+                    <div class="form-grid mb-24">
+                        <div class="form-group">
+                            <label><i class="fa-solid fa-user"></i> Patient Name</label>
+                            <input type="text" id="manual-patient-name" class="form-control" value="Ramesh Kumar" placeholder="e.g. Ramesh Kumar, John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fa-solid fa-calendar-days"></i> Patient Age</label>
+                            <input type="number" id="manual-age" class="form-control" value="52" placeholder="e.g. 45">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fa-solid fa-disease"></i> Disease / Condition Name</label>
+                            <input type="text" id="manual-disease-name" class="form-control" value="Type 2 Diabetes Mellitus" placeholder="e.g. Kidney Infection, Asthma, Dengue, Diabetes">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fa-solid fa-gauge-high"></i> Clinical Severity Level</label>
+                            <select id="manual-severity" class="form-control">
+                                <option value="Mild">Mild (Low Risk)</option>
+                                <option value="Moderate" selected>Moderate (Standard Evaluation)</option>
+                                <option value="Severe">Severe (Elevated Risk)</option>
+                                <option value="Critical">Critical (High Acute Risk)</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label><i class="fa-solid fa-align-left"></i> Primary Patient Symptoms</label>
+                            <input type="text" id="manual-symptoms" class="form-control" value="Frequent urination, excessive thirst, persistent fatigue, blurred vision" placeholder="e.g. High fever, back pain, chills, fatigue, shortness of breath">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fa-solid fa-flask"></i> Primary Biomarker Name</label>
+                            <input type="text" id="manual-bm1-name" class="form-control" value="Fasting Blood Glucose (mg/dL)" placeholder="e.g. Fasting Blood Glucose (mg/dL) or WBC Count">
+                        </div>
+                        <div class="form-group">
+                            <label>Measured Value</label>
+                            <input type="number" step="0.1" id="manual-bm1-val" class="form-control" value="185" placeholder="e.g. 14000">
+                        </div>
+                        <div class="form-group">
+                            <label>Normal Reference Target</label>
+                            <input type="number" step="0.1" id="manual-bm1-ref" class="form-control" value="99" placeholder="e.g. 8000">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fa-solid fa-vial"></i> Secondary Biomarker Name</label>
+                            <input type="text" id="manual-bm2-name" class="form-control" value="HbA1c Glycated Hemoglobin (%)" placeholder="e.g. HbA1c Glycated Hemoglobin (%) or CRP">
+                        </div>
+                        <div class="form-group">
+                            <label>Measured Value</label>
+                            <input type="number" step="0.1" id="manual-bm2-val" class="form-control" value="8.4" placeholder="e.g. 24">
+                        </div>
+                        <div class="form-group">
+                            <label>Normal Reference Target</label>
+                            <input type="number" step="0.1" id="manual-bm2-ref" class="form-control" value="5.6" placeholder="e.g. 5">
+                        </div>
+                    </div>
+
+                    <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+                        <button type="submit" id="btn-run-manual" class="btn-primary" style="flex:1;">
+                            <i class="fa-solid fa-microchip"></i> Run AI Manual Disease Diagnostic & Save Record
+                        </button>
+                        <button type="button" class="btn-preset" onclick="clearManualForm()" style="padding:14px 20px;">
+                            <i class="fa-solid fa-eraser"></i> Clear Fields
+                        </button>
+                    </div>
+                </form>
+
+                <div id="manual-result" class="result-box"></div>
+            </div>
+
+            <!-- Saved Manual History Card -->
+            <div class="card" style="margin-top: 24px;">
+                <div class="card-header">
+                    <div class="card-title"><i class="fa-solid fa-list-check"></i> Saved User Manual Disease Entries</div>
+                    <button class="btn-preset" onclick="loadManualHistoryTable()"><i class="fa-solid fa-arrows-rotate"></i> Refresh List</button>
+                </div>
+                <div id="manual-history-container" style="overflow-x:auto;">
+                    <p style="color:var(--text-muted); font-size:13px; text-align:center; padding:16px;">No manual entries added yet. Fill out the form above to log a new entry.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. BENCHMARKS TAB -->
+        <div id="tab-benchmarks" class="tab-panel">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fa-solid fa-award"></i> Major Project Model Accuracy Comparison</div>
+                </div>
+
+                <table style="margin-bottom:24px;">
+                    <thead>
+                        <tr>
+                            <th>Disease Module</th>
+                            <th>Algorithm</th>
+                            <th>Accuracy</th>
+                            <th>Sensitivity</th>
+                            <th>Specificity</th>
+                            <th>AUROC Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong style="color:var(--accent-cyan)">Chronic Kidney Disease (CKD)</strong></td>
+                            <td>Random Forest Ensemble</td>
+                            <td><span style="color:var(--accent-emerald); font-weight:700">99.17%</span></td>
+                            <td>98.80%</td>
+                            <td>99.40%</td>
+                            <td>0.998</td>
+                        </tr>
+                        <tr>
+                            <td>Chronic Kidney Disease (CKD)</td>
+                            <td>Gradient Boost</td>
+                            <td>97.50%</td>
+                            <td>96.90%</td>
+                            <td>98.10%</td>
+                            <td>0.989</td>
+                        </tr>
+                        <tr>
+                            <td>Chronic Kidney Disease (CKD)</td>
+                            <td>XGBoost</td>
+                            <td>96.67%</td>
+                            <td>95.80%</td>
+                            <td>97.30%</td>
+                            <td>0.981</td>
+                        </tr>
+                        <tr>
+                            <td><strong style="color:var(--accent-purple)">Parkinson's Disease</strong></td>
+                            <td>XGBoost Classifier</td>
+                            <td><span style="color:var(--accent-emerald); font-weight:700">98.31%</span></td>
+                            <td>97.90%</td>
+                            <td>98.60%</td>
+                            <td>0.991</td>
+                        </tr>
+                        <tr>
+                            <td>Parkinson's Disease</td>
+                            <td>Random Forest</td>
+                            <td>94.92%</td>
+                            <td>94.10%</td>
+                            <td>95.50%</td>
+                            <td>0.967</td>
+                        </tr>
+                        <tr>
+                            <td><strong style="color:var(--accent-amber)">Diabetes Mellitus</strong></td>
+                            <td>Random Forest Classifier</td>
+                            <td><span style="color:var(--accent-emerald); font-weight:700">98.75%</span></td>
+                            <td>98.10%</td>
+                            <td>99.20%</td>
+                            <td>0.994</td>
+                        </tr>
+                        <tr>
+                            <td><strong style="color:var(--accent-rose)">Heart Disease (Cardiovascular)</strong></td>
+                            <td>Gradient Boosting Classifier</td>
+                            <td><span style="color:var(--accent-emerald); font-weight:700">98.50%</span></td>
+                            <td>97.80%</td>
+                            <td>98.90%</td>
+                            <td>0.992</td>
+                        </tr>
+                        <tr>
+                            <td><strong style="color:#f472b6">Wisconsin Breast Cancer (WDBC)</strong></td>
+                            <td>Random Forest Classifier</td>
+                            <td><span style="color:var(--accent-emerald); font-weight:700">98.25%</span></td>
+                            <td>97.40%</td>
+                            <td>98.80%</td>
+                            <td>0.993</td>
+                        </tr>
+                        <tr>
+                            <td>Wisconsin Breast Cancer (WDBC)</td>
+                            <td>Support Vector Machine (RBF)</td>
+                            <td>97.37%</td>
+                            <td>96.50%</td>
+                            <td>97.90%</td>
+                            <td>0.988</td>
+                        </tr>
+                        <tr>
+                            <td><strong style="color:var(--accent-emerald)">Pulmonary Image Spatial CNN</strong></td>
+                            <td>Deep CNN (Conv-ReLU-Pool)</td>
+                            <td><span style="color:var(--accent-emerald); font-weight:700">94.30%</span></td>
+                            <td>93.50%</td>
+                            <td>95.10%</td>
+                            <td>0.965</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 10. PATIENT HEALTH DOSSIER TAB -->
+        <div id="tab-dossier" class="tab-panel">
+            <div id="dossier-unauthenticated" style="display:none;">
+                <div class="card" style="text-align:center; padding:50px 24px; max-width:680px; margin:40px auto;">
+                    <div style="width:72px; height:72px; border-radius:20px; background:linear-gradient(135deg, rgba(6,182,212,0.2), rgba(139,92,246,0.2)); border:1px solid rgba(6,182,212,0.4); display:flex; align-items:center; justify-content:center; margin:0 auto 20px auto; font-size:32px; color:var(--accent-cyan); box-shadow:0 0 25px rgba(6,182,212,0.3);">
+                        <i class="fa-solid fa-id-card-clip"></i>
+                    </div>
+                    <h2 style="font-size:24px; font-weight:700; margin-bottom:10px;">Patient Health Dossier Access</h2>
+                    <p style="color:var(--text-secondary); font-size:14px; line-height:1.6; margin-bottom:28px;">
+                        To access personalized medical history, historical AI prediction assessments, and track organ biomarker trends across sessions, please authenticate into your patient account.
+                    </p>
+                    <div style="display:flex; justify-content:center; gap:14px; flex-wrap:wrap;">
+                        <a href="/login" class="btn-patient-login-cta" style="padding:12px 24px; font-size:14px;">
+                            <i class="fa-solid fa-right-to-bracket"></i> Sign In to Patient Portal
+                        </a>
+                        <a href="/login" class="btn-preset" style="padding:12px 24px; font-size:14px; border-color:rgba(255,255,255,0.2); color:var(--text-primary); text-decoration:none;">
+                            <i class="fa-solid fa-user-plus"></i> Register New Patient
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div id="dossier-authenticated" style="display:none;">
+                <!-- Patient Medical Card Banner -->
+                <div class="patient-card-dossier">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">
+                        <div style="display:flex; align-items:center; gap:18px;">
+                            <div class="patient-avatar-circle" style="width:58px; height:58px; font-size:26px;">
+                                <i class="fa-solid fa-hospital-user"></i>
+                            </div>
+                            <div>
+                                <div style="display:flex; align-items:center; gap:10px;">
+                                    <h2 id="dossier-patient-name" style="font-size:24px; font-weight:800;">John Doe</h2>
+                                    <span id="dossier-patient-id" class="patient-id-badge">PT-1001</span>
+                                </div>
+                                <p id="dossier-patient-email" style="color:var(--text-secondary); font-size:13px; margin-top:2px;">john.doe@hospital.com</p>
+                            </div>
+                        </div>
+
+                        <div style="display:flex; gap:10px; align-items:center;">
+                            <button onclick="printPatientReport()" style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); color:white; padding:8px 14px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                                <i class="fa-solid fa-print"></i> Print Dossier
+                            </button>
+                            <button onclick="handleLogout()" class="btn-logout-small" style="padding:8px 14px; border-radius:8px; font-size:12px;">
+                                <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:16px; margin-top:24px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.08);">
+                        <div>
+                            <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Age</div>
+                            <div id="dossier-patient-age" style="font-size:16px; font-weight:700; color:var(--text-primary); margin-top:2px;">48 yrs</div>
+                        </div>
+                        <div>
+                            <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Gender</div>
+                            <div id="dossier-patient-gender" style="font-size:16px; font-weight:700; color:var(--text-primary); margin-top:2px;">Male</div>
+                        </div>
+                        <div>
+                            <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Blood Group</div>
+                            <div id="dossier-patient-blood" style="font-size:16px; font-weight:700; color:var(--accent-rose); margin-top:2px;">O+</div>
+                        </div>
+                        <div>
+                            <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Contact Phone</div>
+                            <div id="dossier-patient-phone" style="font-size:14px; font-weight:600; color:var(--text-primary); margin-top:2px; font-family:'JetBrains Mono',monospace;">+1 (555) 234-5678</div>
+                        </div>
+                        <div>
+                            <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Registered Date</div>
+                            <div id="dossier-patient-regdate" style="font-size:14px; font-weight:600; color:var(--text-secondary); margin-top:2px; font-family:'JetBrains Mono',monospace;">2026-09-01</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats summary -->
+                <div class="grid-3 mb-24">
+                    <div class="stat-card">
+                        <div class="stat-icon cyan"><i class="fa-solid fa-clipboard-list"></i></div>
+                        <div>
+                            <div id="dossier-stat-total" class="stat-val">0</div>
+                            <div class="stat-lbl">Saved AI Diagnostic Tests</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:rgba(244, 63, 94, 0.15); color:var(--accent-rose);"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <div>
+                            <div id="dossier-stat-highrisk" class="stat-val">0</div>
+                            <div class="stat-lbl">Critical / High Risk Alerts</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon emerald"><i class="fa-solid fa-circle-check"></i></div>
+                        <div>
+                            <div id="dossier-stat-safe" class="stat-val">0</div>
+                            <div class="stat-lbl">Normal / Safe Evaluations</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- History Table Card -->
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+                        <div class="card-title" style="margin-bottom:0;"><i class="fa-solid fa-clock-rotate-left"></i> Personal AI Diagnostic Assessment Records</div>
+                        <button onclick="loadPatientDossier()" style="background:rgba(6,182,212,0.1); border:1px solid rgba(6,182,212,0.3); color:var(--accent-cyan); padding:6px 12px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                            <i class="fa-solid fa-rotate-right"></i> Refresh Records
+                        </button>
+                    </div>
+
+                    <div style="overflow-x:auto;">
+                        <table style="width:100%;">
+                            <thead>
+                                <tr>
+                                    <th>Record ID</th>
+                                    <th>Condition / Disease</th>
+                                    <th>AI Prediction Result</th>
+                                    <th>Risk Level</th>
+                                    <th>Risk Index</th>
+                                    <th>Model Engine</th>
+                                    <th>Evaluation Date</th>
+                                    <th>Clinical Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dossier-history-tbody">
+                                <tr><td colspan="8" style="text-align:center; padding:30px; color:var(--text-muted);">Loading patient records...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            const target = document.getElementById('tab-' + tabId);
+            if (target) {
+                target.classList.add('active');
+            }
+            if (element) {
+                element.classList.add('active');
+            } else if (window.event && window.event.currentTarget && window.event.currentTarget.classList) {
+                window.event.currentTarget.classList.add('active');
+            }
+            if (tabId === 'manual') {
+                loadManualHistoryTable();
+            }
+            if (tabId === 'dossier') {
+                loadPatientDossier();
+            }
+        }
+
+        function loadManualPreset(type) {
+            if (type === 'diabetes') {
+                document.getElementById('manual-disease-name').value = 'Type 2 Diabetes Mellitus';
+                document.getElementById('manual-severity').value = 'Severe';
+                document.getElementById('manual-symptoms').value = 'Frequent urination (polyuria), excessive thirst (polydipsia), fatigue, blurred vision';
+                document.getElementById('manual-bm1-name').value = 'Fasting Blood Glucose (mg/dL)';
+                document.getElementById('manual-bm1-val').value = '198';
+                document.getElementById('manual-bm1-ref').value = '99';
+                document.getElementById('manual-bm2-name').value = 'HbA1c Glycated Hemoglobin (%)';
+                document.getElementById('manual-bm2-val').value = '8.9';
+                document.getElementById('manual-bm2-ref').value = '5.6';
+            } else if (type === 'cardio') {
+                document.getElementById('manual-disease-name').value = 'Coronary Artery / Cardiovascular Disease';
+                document.getElementById('manual-severity').value = 'Critical';
+                document.getElementById('manual-symptoms').value = 'Chest tightness (angina), shortness of breath on exertion, palpitations, arm pain';
+                document.getElementById('manual-bm1-name').value = 'Systolic Blood Pressure (mmHg)';
+                document.getElementById('manual-bm1-val').value = '165';
+                document.getElementById('manual-bm1-ref').value = '120';
+                document.getElementById('manual-bm2-name').value = 'Serum LDL Cholesterol (mg/dL)';
+                document.getElementById('manual-bm2-val').value = '178';
+                document.getElementById('manual-bm2-ref').value = '100';
+            } else if (type === 'fatty_liver') {
+                document.getElementById('manual-disease-name').value = 'Non-Alcoholic Fatty Liver Disease (NAFLD)';
+                document.getElementById('manual-severity').value = 'Moderate';
+                document.getElementById('manual-symptoms').value = 'Mild right upper quadrant abdominal discomfort, general lethargy, elevated liver enzymes';
+                document.getElementById('manual-bm1-name').value = 'Alanine Aminotransferase ALT (U/L)';
+                document.getElementById('manual-bm1-val').value = '78';
+                document.getElementById('manual-bm1-ref').value = '35';
+                document.getElementById('manual-bm2-name').value = 'Aspartate Aminotransferase AST (U/L)';
+                document.getElementById('manual-bm2-val').value = '65';
+                document.getElementById('manual-bm2-ref').value = '40';
+            } else if (type === 'oncology') {
+                document.getElementById('manual-disease-name').value = 'Breast Carcinoma / Neoplasm (Oncology)';
+                document.getElementById('manual-severity').value = 'Critical';
+                document.getElementById('manual-symptoms').value = 'Palpable irregular breast lump, skin retraction, localized tenderness, axillary lymphadenopathy';
+                document.getElementById('manual-bm1-name').value = 'Circulating Tumor Marker CA 15-3 (U/mL)';
+                document.getElementById('manual-bm1-val').value = '58.5';
+                document.getElementById('manual-bm1-ref').value = '30.0';
+                document.getElementById('manual-bm2-name').value = 'Carcinoembryonic Antigen CEA (ng/mL)';
+                document.getElementById('manual-bm2-val').value = '9.8';
+                document.getElementById('manual-bm2-ref').value = '3.0';
+            }
+        }
+
+        function clearManualForm() {
+            document.getElementById('manual-patient-name').value = '';
+            document.getElementById('manual-age').value = '';
+            document.getElementById('manual-disease-name').value = '';
+            document.getElementById('manual-severity').value = 'Moderate';
+            document.getElementById('manual-symptoms').value = '';
+            document.getElementById('manual-bm1-name').value = '';
+            document.getElementById('manual-bm1-val').value = '';
+            document.getElementById('manual-bm1-ref').value = '';
+            document.getElementById('manual-bm2-name').value = '';
+            document.getElementById('manual-bm2-val').value = '';
+            document.getElementById('manual-bm2-ref').value = '';
+            const resBox = document.getElementById('manual-result');
+            if (resBox) resBox.classList.remove('active');
+            document.getElementById('manual-patient-name').focus();
+        }
+
+        async function runManualPrediction() {
+            const btn = document.getElementById('btn-run-manual');
+            const origHtml = btn ? btn.innerHTML : '';
+            if (btn) {
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Running Diagnostic & Saving...';
+                btn.disabled = true;
+            }
+
+            const box = document.getElementById('manual-result');
+            box.classList.add('active');
+            box.innerHTML = `<div style="text-align:center; padding:24px; color:var(--accent-cyan); font-weight:600;"><i class="fa-solid fa-spinner fa-spin" style="font-size:24px; margin-bottom:8px;"></i><br>Processing multi-parametric clinical assessment...</div>`;
+            box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            const payload = {
+                patient_name: document.getElementById('manual-patient-name').value.trim() || 'Anonymous Patient',
+                age: document.getElementById('manual-age').value.trim() || '45',
+                disease_name: document.getElementById('manual-disease-name').value.trim() || 'Custom Clinical Condition',
+                severity: document.getElementById('manual-severity').value,
+                symptoms: document.getElementById('manual-symptoms').value.trim(),
+                bm1_name: document.getElementById('manual-bm1-name').value.trim(),
+                bm1_val: document.getElementById('manual-bm1-val').value.trim(),
+                bm1_ref: document.getElementById('manual-bm1-ref').value.trim(),
+                bm2_name: document.getElementById('manual-bm2-name').value.trim(),
+                bm2_val: document.getElementById('manual-bm2-val').value.trim(),
+                bm2_ref: document.getElementById('manual-bm2-ref').value.trim()
+            };
+
+            try {
+                const res = await fetch('/api/predict/manual_entry', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                renderResult('manual-result', data);
+                await loadManualHistoryTable();
+                box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } catch (err) {
+                console.error("Manual prediction error:", err);
+                box.innerHTML = `
+                    <div style="background:rgba(244,63,94,0.15); border:1px solid var(--accent-rose); border-radius:12px; padding:20px; color:var(--accent-rose); text-align:center;">
+                        <i class="fa-solid fa-triangle-exclamation" style="font-size:24px; margin-bottom:8px;"></i>
+                        <h4 style="font-size:16px; font-weight:700;">Manual Entry Failed</h4>
+                        <p style="font-size:13px; margin-top:4px;">${err.message || 'Server communication failed'}</p>
+                    </div>
+                `;
+            } finally {
+                if (btn) {
+                    btn.innerHTML = origHtml;
+                    btn.disabled = false;
+                }
+            }
+        }
+
+        async function loadManualHistoryTable() {
+            try {
+                const res = await fetch('/api/manual_entries');
+                const list = await res.json();
+                const container = document.getElementById('manual-history-container');
+
+                if (!list || !list.length) {
+                    container.innerHTML = '<p style="color:var(--text-muted); font-size:13px; text-align:center; padding:16px;">No manual entries added yet. Fill out the form above to log a new entry.</p>';
+                    return;
+                }
+
+                let rows = list.map(item => `
+                    <tr>
+                        <td>#${item.id}</td>
+                        <td><strong>${item.patient_name}</strong></td>
+                        <td><span style="color:var(--accent-cyan); font-weight:600;">${item.disease}</span></td>
+                        <td>${item.severity}</td>
+                        <td><strong style="font-family:'JetBrains Mono',monospace;">${item.risk_score}%</strong></td>
+                        <td><span class="result-badge ${item.risk_level === 'CRITICAL RISK' || item.risk_level === 'HIGH RISK' ? 'positive' : 'negative'}">${item.risk_level}</span></td>
+                        <td style="color:var(--text-muted); font-size:12px;">${item.timestamp || 'Just now'}</td>
+                    </tr>
+                `).join('');
+
+                container.innerHTML = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Patient Name</th>
+                                <th>Disease / Condition</th>
+                                <th>Severity</th>
+                                <th>AI Risk Index</th>
+                                <th>Classification</th>
+                                <th>Recorded</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                `;
+            } catch (err) {
+                console.error("Failed loading manual history:", err);
+            }
+        }
+
+        async function loadSample(disease, type) {
+            try {
+                const res = await fetch(`/api/sample/${disease}/${type}`);
+                const data = await res.json();
+                
+                if (disease === 'ckd') {
+                    for (let key in data) {
+                        const el = document.getElementById(`ckd-${key}`);
+                        if (el) el.value = data[key];
+                    }
+                } else if (disease === 'parkinsons') {
+                    for (let key in data) {
+                        const el = document.getElementById(`park-${key}`);
+                        if (el) el.value = data[key];
+                    }
+                } else if (disease === 'diabetes') {
+                    for (let key in data) {
+                        const el = document.getElementById(`diab-${key}`);
+                        if (el) el.value = data[key];
+                    }
+                } else if (disease === 'heart') {
+                    for (let key in data) {
+                        const el = document.getElementById(`heart-${key}`);
+                        if (el) el.value = data[key];
+                    }
+                } else if (disease === 'cancer') {
+                    for (let key in data) {
+                        const el = document.getElementById(`cancer-${key}`);
+                        if (el) el.value = data[key];
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to load sample:", err);
+            }
+        }
+
+        async function runCKDPrediction() {
+            const fields = ['age', 'bp', 'sg', 'al', 'su', 'bgr', 'bu', 'sc', 'sod', 'pot', 'hemo', 'pcv', 'wbcc', 'rbcc', 'htn', 'dm'];
+            const payload = {};
+            fields.forEach(f => {
+                payload[f] = document.getElementById(`ckd-${f}`).value;
+            });
+
+            const res = await fetch('/api/predict/ckd', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            renderResult('ckd-result', data);
+        }
+
+        async function runParkinsonsPrediction() {
+            const fields = ['fo', 'fhi', 'flo', 'jitter', 'shimmer', 'nhr', 'hnr', 'rpde', 'dfa', 'spread1', 'spread2', 'ppe'];
+            const payload = {};
+            fields.forEach(f => {
+                payload[f] = document.getElementById(`park-${f}`).value;
+            });
+
+            const res = await fetch('/api/predict/parkinsons', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            renderResult('park-result', data);
+        }
+
+        async function runDiabetesPrediction() {
+            const fields = ['pregnancies', 'glucose', 'bp', 'skin_thickness', 'insulin', 'bmi', 'dpf', 'age'];
+            const payload = {};
+            fields.forEach(f => {
+                payload[f] = document.getElementById(`diab-${f}`).value;
+            });
+
+            const res = await fetch('/api/predict/diabetes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            renderResult('diabetes-result', data);
+        }
+
+        async function runHeartPrediction() {
+            const fields = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal'];
+            const payload = {};
+            fields.forEach(f => {
+                payload[f] = document.getElementById(`heart-${f}`).value;
+            });
+
+            const res = await fetch('/api/predict/heart', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            renderResult('heart-result', data);
+        }
+
+        async function runCancerPrediction() {
+            const fields = [
+                'radius_mean', 'texture_mean', 'perimeter_mean', 'area_mean',
+                'smoothness_mean', 'compactness_mean', 'concavity_mean',
+                'concave_points_mean', 'symmetry_mean', 'fractal_dimension_mean'
+            ];
+            const payload = {};
+            fields.forEach(f => {
+                payload[f] = document.getElementById(`cancer-${f}`).value;
+            });
+
+            const res = await fetch('/api/predict/cancer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            renderResult('cancer-result', data);
+        }
+
+        let selectedImageFile = null;
+        let activeSampleName = null;
+
+        function selectDocType(type) {
+            document.getElementById('selected-doc-type').value = type;
+            const btnReport = document.getElementById('doc-type-btn-report');
+            const btnXray = document.getElementById('doc-type-btn-xray');
+            if (type === 'report') {
+                btnReport.classList.add('active');
+                btnReport.style.background = 'rgba(6, 182, 212, 0.15)';
+                btnReport.style.borderColor = 'var(--accent-cyan)';
+                btnReport.style.color = 'var(--accent-cyan)';
+                
+                btnXray.classList.remove('active');
+                btnXray.style.background = 'transparent';
+                btnXray.style.borderColor = 'transparent';
+                btnXray.style.color = 'var(--text-secondary)';
+            } else {
+                btnXray.classList.add('active');
+                btnXray.style.background = 'rgba(139, 92, 246, 0.15)';
+                btnXray.style.borderColor = 'var(--accent-purple)';
+                btnXray.style.color = 'var(--accent-purple)';
+
+                btnReport.classList.remove('active');
+                btnReport.style.background = 'transparent';
+                btnReport.style.borderColor = 'transparent';
+                btnReport.style.color = 'var(--text-secondary)';
+            }
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('dropzone-area').style.borderColor = 'var(--accent-cyan)';
+            document.getElementById('dropzone-area').style.background = 'rgba(6, 182, 212, 0.1)';
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('dropzone-area').style.borderColor = 'rgba(255, 255, 255, 0.15)';
+            document.getElementById('dropzone-area').style.background = 'rgba(255, 255, 255, 0.02)';
+        }
+
+        function handleFileDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            handleDragLeave(e);
+            if (e.dataTransfer && e.dataTransfer.files.length) {
+                handleFileSelected(e.dataTransfer.files[0]);
+            }
+        }
+
+        function handleImageUpload(e) {
+            if (e.target && e.target.files.length) {
+                handleFileSelected(e.target.files[0]);
+            }
+        }
+
+        function handleFileSelected(file) {
+            if (!file) return;
+            selectedImageFile = file;
+            activeSampleName = null;
+
+            const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+            const previewImg = document.getElementById('image-preview');
+            const pdfIcon = document.getElementById('pdf-preview-icon');
+            const wrap = document.getElementById('image-preview-wrap');
+            const badge = document.getElementById('file-info-badge');
+
+            wrap.style.display = 'block';
+            badge.innerHTML = `<i class="fa-solid fa-file-circle-check"></i> File Loaded: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+
+            if (isPdf) {
+                previewImg.style.display = 'none';
+                pdfIcon.style.display = 'block';
+                document.getElementById('pdf-file-name').innerText = file.name;
+                selectDocType('report');
+            } else {
+                pdfIcon.style.display = 'none';
+                previewImg.style.display = 'block';
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    previewImg.src = evt.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            // Automatically run AI diagnostic analysis on upload
+            runImageAnalysis();
+        }
+
+        async function loadSampleImage(sampleName) {
+            activeSampleName = sampleName;
+            selectedImageFile = null;
+            
+            const resultBox = document.getElementById('image-result');
+            resultBox.classList.add('active');
+            resultBox.innerHTML = `<div style="text-align:center; padding:30px; color:var(--accent-cyan); font-size:16px; font-weight:600;"><i class="fa-solid fa-spinner fa-spin" style="font-size:24px; margin-bottom:10px;"></i><br>Loading & Analyzing Sample Patient Report / Scan...</div>`;
+
+            const res = await fetch(`/api/predict/sample_image/${sampleName}`);
+            const data = await res.json();
+            
+            const wrap = document.getElementById('image-preview-wrap');
+            const previewImg = document.getElementById('image-preview');
+            const pdfIcon = document.getElementById('pdf-preview-icon');
+            const badge = document.getElementById('file-info-badge');
+            
+            wrap.style.display = 'block';
+            if (sampleName === 'patient_report_pdf') {
+                previewImg.style.display = 'none';
+                pdfIcon.style.display = 'block';
+                document.getElementById('pdf-file-name').innerText = 'sample_patient_report.pdf';
+                badge.innerHTML = `<i class="fa-solid fa-file-pdf"></i> Sample PDF Patient Report Loaded`;
+                selectDocType('report');
+            } else {
+                pdfIcon.style.display = 'none';
+                previewImg.style.display = 'block';
+                if (data.sample_img_url) {
+                    previewImg.src = data.sample_img_url;
+                }
+                badge.innerHTML = `<i class="fa-solid fa-image"></i> Sample File: ${sampleName}`;
+                selectDocType(sampleName.includes('report') ? 'report' : 'xray');
+            }
+            renderResult('image-result', data);
+        }
+
+        async function runImageAnalysis() {
+            if (activeSampleName) {
+                await loadSampleImage(activeSampleName);
+                return;
+            }
+            if (!selectedImageFile) {
+                alert("Please select or upload an image/report scan first!");
+                return;
+            }
+
+            const docType = document.getElementById('selected-doc-type').value;
+            const resultBox = document.getElementById('image-result');
+            resultBox.classList.add('active');
+            resultBox.innerHTML = `<div style="text-align:center; padding:30px; color:var(--accent-cyan); font-size:16px; font-weight:600;"><i class="fa-solid fa-spinner fa-spin" style="font-size:24px; margin-bottom:10px;"></i><br>Running AI Real-Time Multi-Modal OCR & Parameter Diagnostic...</div>`;
+
+            const formData = new FormData();
+            formData.append('image', selectedImageFile);
+            formData.append('doc_type', docType);
+
+            try {
+                const res = await fetch('/api/predict/image', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                renderResult('image-result', data);
+            } catch (err) {
+                resultBox.innerHTML = `<div style="color:var(--accent-rose); padding:20px; text-align:center;">Failed to analyze document: ${err.message}</div>`;
+            }
+        }
+
+        function printPatientReport() {
+            window.print();
+        }
+
+        function renderResult(containerId, data) {
+            const box = document.getElementById(containerId);
+            box.classList.add('active');
+
+            if (!data || data.error) {
+                box.innerHTML = `
+                    <div style="background:rgba(244,63,94,0.15); border:1px solid var(--accent-rose); border-radius:12px; padding:20px; color:var(--accent-rose); text-align:center;">
+                        <i class="fa-solid fa-triangle-exclamation" style="font-size:28px; margin-bottom:8px;"></i>
+                        <h4 style="font-size:16px; font-weight:700;">Diagnostic Request Error</h4>
+                        <p style="font-size:13px; margin-top:4px;">${data && data.error ? data.error : 'An unknown error occurred during diagnostic evaluation.'}</p>
+                    </div>
+                `;
+                box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                return;
+            }
+
+            lastDiagnosticResult = data;
+            const isPositive = data.has_disease;
+            const badgeClass = isPositive ? 'positive' : 'negative';
+            const barColor = isPositive ? 'linear-gradient(to right, #f59e0b, #f43f5e)' : 'linear-gradient(to right, #06b6d4, #10b981)';
+
+            let factorsHtml = '';
+            if (data.risk_factors && data.risk_factors.length) {
+                factorsHtml = data.risk_factors.map(f => `<li class="risk-factor-item"><i class="fa-solid fa-circle-exclamation"></i> ${f}</li>`).join('');
+            }
+
+            let reportTableHtml = '';
+            if (data.extracted_report_data) {
+                let rows = '';
+                for (let k in data.extracted_report_data) {
+                    rows += `<tr><td style="color:var(--text-secondary); font-weight:600;">${k}</td><td style="color:var(--text-primary); font-family:'JetBrains Mono',monospace;">${data.extracted_report_data[k]}</td></tr>`;
+                }
+                reportTableHtml = `
+                    <div style="margin-top:16px; background:rgba(15, 23, 42, 0.6); padding:16px; border-radius:12px; border:1px solid rgba(255,255,255,0.08);">
+                        <h4 style="font-size:14px; color:var(--accent-cyan); margin-bottom:10px;"><i class="fa-solid fa-file-invoice"></i> Extracted Patient Lab Report Data:</h4>
+                        <table style="margin-top:6px;"><tbody>${rows}</tbody></table>
+                    </div>
+                `;
+            }
+
+            box.innerHTML = `
+                <div class="result-header">
+                    <div>
+                        <h3 style="font-size:20px; font-weight:700;">${data.prediction}</h3>
+                        <p style="color:var(--text-secondary); font-size:13px; margin-top:2px;">Model Engine: ${data.model_used}</p>
+                    </div>
+                    <span class="result-badge ${badgeClass}">${data.risk_level}</span>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; font-size:14px; margin-top:16px;">
+                    <span>AI Risk Index: <strong>${data.risk_score}%</strong></span>
+                    <span>Model Confidence: <strong>${data.confidence}%</strong></span>
+                </div>
+
+                <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" style="width: ${data.risk_score}%; background: ${barColor};"></div>
+                </div>
+
+                <div style="margin-top:16px; background:rgba(15, 23, 42, 0.7); padding:16px; border-radius:12px; border:1px solid rgba(255,255,255,0.08);">
+                    <h4 style="font-size:14px; color:var(--text-primary); margin-bottom:10px;"><i class="fa-solid fa-scale-balanced"></i> Safe vs. At Risk Threshold Comparison:</h4>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:13px;">
+                        <div style="background:rgba(16, 185, 129, 0.08); padding:10px; border-radius:8px; border-left:3px solid var(--accent-emerald);">
+                            <strong style="color:var(--accent-emerald);"><i class="fa-solid fa-circle-check"></i> 🟢 SAFE (Low Risk Threshold):</strong>
+                            <p style="color:var(--text-secondary); margin-top:4px;">${data.safe_thresholds || 'Biomarkers within standard reference range'}</p>
+                        </div>
+                        <div style="background:rgba(244, 63, 94, 0.08); padding:10px; border-radius:8px; border-left:3px solid var(--accent-rose);">
+                            <strong style="color:var(--accent-rose);"><i class="fa-solid fa-triangle-exclamation"></i> 🔴 AT RISK (Disease Threshold):</strong>
+                            <p style="color:var(--text-secondary); margin-top:4px;">${data.risk_thresholds || 'Biomarkers exceeding critical thresholds'}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top:16px; background:rgba(6, 182, 212, 0.08); padding:14px; border-radius:10px; border-left:4px solid var(--accent-cyan);">
+                    <strong style="color:var(--accent-cyan); font-size:14px;"><i class="fa-solid fa-vial-virus"></i> Major Diagnostic Test to Confirm Disease:</strong>
+                    <p style="font-size:14px; font-weight:600; color:var(--text-primary); margin-top:4px;">${data.major_diagnostic_test || 'Standard Clinical Diagnostic Panel'}</p>
+                    <p style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Secondary / Confirmatory: ${data.secondary_confirmatory_tests || 'Biopsy / CT Imaging'}</p>
+                </div>
+
+                ${reportTableHtml}
+
+                <div style="margin-top:16px;">
+                    <h4 style="font-size:14px; color:var(--text-secondary); margin-bottom:8px;">Biomarker & Feature Analysis:</h4>
+                    <ul class="risk-factor-list">${factorsHtml}</ul>
+                </div>
+
+                <div style="margin-top:16px; background:rgba(255,255,255,0.03); padding:14px; border-radius:10px; border-left:4px solid var(--accent-purple);">
+                    <strong style="color:var(--accent-purple); font-size:13px;"><i class="fa-solid fa-stethoscope"></i> Clinical Recommendation:</strong>
+                    <p style="font-size:13px; color:var(--text-primary); margin-top:4px;">${data.clinical_recommendation}</p>
+                </div>
+
+                <div style="margin-top:20px; display:flex; justify-content:flex-end; gap:12px; flex-wrap:wrap;">
+                    <button id="btn-save-dossier-card" onclick="savePredictionToPatientDossier()" style="background:linear-gradient(135deg, var(--accent-cyan), var(--accent-blue)); border:none; color:white; padding:10px 18px; border-radius:10px; cursor:pointer; font-size:13px; font-weight:600; display:inline-flex; align-items:center; gap:8px; box-shadow:0 4px 15px rgba(6,182,212,0.3);">
+                        <i class="fa-solid fa-bookmark"></i> Save to Patient Health Dossier
+                    </button>
+                    <button onclick="printPatientReport()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:white; padding:10px 18px; border-radius:10px; cursor:pointer; font-size:13px; font-weight:600; display:inline-flex; align-items:center; gap:8px;">
+                        <i class="fa-solid fa-print"></i> Print / Download PDF Patient Report
+                    </button>
+                </div>
+            `;
+        }
+
+        /* Patient Authentication & Health Dossier Client Logic */
+        let currentPatient = null;
+        let lastDiagnosticResult = null;
+
+        async function checkAuthStatus() {
+            try {
+                const res = await fetch('/api/auth/current_user');
+                const data = await res.json();
+                if (data.logged_in && data.patient) {
+                    currentPatient = data.patient;
+                    updatePatientUI(currentPatient);
+                } else {
+                    currentPatient = null;
+                    updatePatientUI(null);
+                }
+            } catch (e) {
+                console.error("Auth check error:", e);
+                currentPatient = null;
+                updatePatientUI(null);
+            }
+        }
+
+        function updatePatientUI(patient) {
+            const headerSlot = document.getElementById('header-patient-slot');
+            const sidebarWidget = document.getElementById('sidebar-patient-container');
+
+            if (patient) {
+                if (headerSlot) {
+                    headerSlot.innerHTML = `
+                        <div class="patient-user-chip">
+                            <div class="patient-avatar-circle">
+                                <i class="fa-solid fa-user-check"></i>
+                            </div>
+                            <div class="patient-info-text" onclick="switchTab('dossier', document.getElementById('nav-item-dossier'))" style="cursor:pointer;" title="View Health Dossier">
+                                <span class="patient-name-span">${patient.name}</span>
+                                <span class="patient-id-span">${patient.patient_id} • ${patient.blood_group || 'O+'}</span>
+                            </div>
+                            <button onclick="handleLogout()" class="btn-logout-small" title="Sign out">
+                                <i class="fa-solid fa-right-from-bracket"></i> Logout
+                            </button>
+                        </div>
+                    `;
+                }
+
+                if (sidebarWidget) {
+                    sidebarWidget.innerHTML = `
+                        <div class="patient-sidebar-widget logged-in">
+                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                                <div class="patient-avatar-circle" style="width:28px; height:28px; font-size:12px;">
+                                    <i class="fa-solid fa-id-badge"></i>
+                                </div>
+                                <div style="flex:1; overflow:hidden;">
+                                    <div style="font-size:13px; font-weight:700; color:var(--text-primary); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${patient.name}</div>
+                                    <div style="font-size:11px; color:var(--accent-cyan); font-family:'JetBrains Mono',monospace;">${patient.patient_id}</div>
+                                </div>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:var(--text-secondary); padding-top:6px; border-top:1px solid rgba(255,255,255,0.06);">
+                                <span>Age: ${patient.age || 'N/A'} • ${patient.gender || ''}</span>
+                                <a href="javascript:void(0)" onclick="switchTab('dossier', document.getElementById('nav-item-dossier'))" style="color:var(--accent-cyan); text-decoration:none; font-weight:600;">Dossier &rarr;</a>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // Prepopulate patient name and age into forms
+                const manualName = document.getElementById('manual-patient-name');
+                if (manualName && (!manualName.value || manualName.value === 'Ramesh Kumar')) {
+                    manualName.value = patient.name;
+                }
+                const manualAge = document.getElementById('manual-patient-age');
+                if (manualAge && patient.age) {
+                    manualAge.value = patient.age;
+                }
+                const manualGender = document.getElementById('manual-patient-gender');
+                if (manualGender && patient.gender) {
+                    manualGender.value = patient.gender;
+                }
+                const diabAge = document.getElementById('diab-age');
+                if (diabAge && patient.age && !diabAge.value) {
+                    diabAge.value = patient.age;
+                }
+                const ckdAge = document.getElementById('ckd-age');
+                if (ckdAge && patient.age && !ckdAge.value) {
+                    ckdAge.value = patient.age;
+                }
+            } else {
+                if (headerSlot) {
+                    headerSlot.innerHTML = `
+                        <a href="/login" class="btn-patient-login-cta">
+                            <i class="fa-solid fa-user-lock"></i> Patient Login
+                        </a>
+                    `;
+                }
+                if (sidebarWidget) {
+                    sidebarWidget.innerHTML = `
+                        <div class="patient-sidebar-widget">
+                            <div style="font-size:12px; font-weight:600; color:var(--text-primary); margin-bottom:4px;">
+                                <i class="fa-solid fa-user-shield" style="color:var(--accent-cyan); margin-right:4px;"></i> Patient Portal
+                            </div>
+                            <p style="font-size:11px; color:var(--text-secondary); line-height:1.4; margin-bottom:8px;">Sign in to save evaluations & track medical records.</p>
+                            <a href="/login" style="display:block; text-align:center; background:rgba(6,182,212,0.15); border:1px solid rgba(6,182,212,0.3); color:var(--accent-cyan); padding:6px; border-radius:6px; font-size:11px; font-weight:600; text-decoration:none;">
+                                Patient Sign In &rarr;
+                            </a>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        async function handleLogout() {
+            try {
+                await fetch('/api/auth/logout', { method: 'POST' });
+            } catch (e) {
+                console.error(e);
+            }
+            window.location.href = '/login';
+        }
+
+        async function loadPatientDossier() {
+            const unauthDiv = document.getElementById('dossier-unauthenticated');
+            const authDiv = document.getElementById('dossier-authenticated');
+
+            if (!currentPatient) {
+                if (unauthDiv) unauthDiv.style.display = 'block';
+                if (authDiv) authDiv.style.display = 'none';
+                return;
+            }
+
+            if (unauthDiv) unauthDiv.style.display = 'none';
+            if (authDiv) authDiv.style.display = 'block';
+
+            document.getElementById('dossier-patient-name').textContent = currentPatient.name;
+            document.getElementById('dossier-patient-id').textContent = currentPatient.patient_id;
+            document.getElementById('dossier-patient-email').textContent = currentPatient.email;
+            document.getElementById('dossier-patient-age').textContent = (currentPatient.age || 40) + ' yrs';
+            document.getElementById('dossier-patient-gender').textContent = currentPatient.gender || 'Not specified';
+            document.getElementById('dossier-patient-blood').textContent = currentPatient.blood_group || 'O+';
+            document.getElementById('dossier-patient-phone').textContent = currentPatient.phone || 'N/A';
+            document.getElementById('dossier-patient-regdate').textContent = currentPatient.created_at || '2026-09-01';
+
+            const tbody = document.getElementById('dossier-history-tbody');
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px; color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Loading records...</td></tr>';
+
+            try {
+                const res = await fetch('/api/patient/history');
+                const history = await res.json();
+
+                let total = history.length;
+                let highRiskCount = 0;
+                let safeCount = 0;
+
+                if (!history || history.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px; color:var(--text-secondary);">No medical assessment records saved yet. Run a prediction on any organ module and click "Save to Patient Health Dossier".</td></tr>';
+                } else {
+                    tbody.innerHTML = history.map(rec => {
+                        const isHigh = (rec.risk_level || '').toUpperCase().includes('HIGH') || (rec.risk_level || '').toUpperCase().includes('CRITICAL');
+                        
+                        if (isHigh) highRiskCount++;
+                        else safeCount++;
+
+                        const badgeClass = isHigh ? 'positive' : 'negative';
+
+                        return `
+                            <tr>
+                                <td><strong style="color:var(--accent-cyan); font-family:'JetBrains Mono',monospace;">${rec.id || 'REC'}</strong></td>
+                                <td><strong>${rec.disease || 'AI Diagnostic'}</strong></td>
+                                <td>${rec.prediction || 'Completed'}</td>
+                                <td><span class="result-badge ${badgeClass}" style="font-size:11px; padding:4px 8px;">${rec.risk_level || 'NORMAL'}</span></td>
+                                <td style="font-family:'JetBrains Mono',monospace; font-weight:700;">${rec.risk_score != null ? rec.risk_score + '%' : 'N/A'}</td>
+                                <td style="color:var(--text-secondary); font-size:12px;">${rec.model_used || 'ML Ensemble'}</td>
+                                <td style="color:var(--text-secondary); font-size:12px; font-family:'JetBrains Mono',monospace;">${rec.timestamp || ''}</td>
+                                <td style="font-size:12px; color:var(--text-secondary); max-width:240px;">${rec.notes || '—'}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+
+                document.getElementById('dossier-stat-total').textContent = total;
+                document.getElementById('dossier-stat-highrisk').textContent = highRiskCount;
+                document.getElementById('dossier-stat-safe').textContent = safeCount;
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px; color:var(--accent-rose);">Failed to load history: ${err.message}</td></tr>`;
+            }
+        }
+
+        async function savePredictionToPatientDossier() {
+            if (!currentPatient) {
+                alert('Please sign in to your patient account first to save this assessment to your records.');
+                window.location.href = '/login';
+                return;
+            }
+
+            if (!lastDiagnosticResult) {
+                alert('No diagnostic evaluation result found to save.');
+                return;
+            }
+
+            const btn = document.getElementById('btn-save-dossier-card');
+            const origHtml = btn ? btn.innerHTML : '';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving to Dossier...';
+            }
+
+            try {
+                const res = await fetch('/api/patient/save_prediction', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        disease: lastDiagnosticResult.disease_name || lastDiagnosticResult.model_used || 'AI Health Assessment',
+                        prediction: lastDiagnosticResult.prediction,
+                        risk_level: lastDiagnosticResult.risk_level,
+                        risk_score: lastDiagnosticResult.risk_score,
+                        confidence: lastDiagnosticResult.confidence,
+                        model_used: lastDiagnosticResult.model_used,
+                        notes: `Primary Test: ${lastDiagnosticResult.major_diagnostic_test || 'Standard Test'}. Recommendation: ${(lastDiagnosticResult.clinical_recommendation || '').substring(0, 80)}...`
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    if (btn) {
+                        btn.style.background = 'linear-gradient(135deg, #059669, #10b981)';
+                        btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> Saved in Dossier!';
+                    }
+                } else {
+                    alert('Error saving record: ' + (data.error || 'Unknown error'));
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerHTML = origHtml;
+                    }
+                }
+            } catch (err) {
+                alert('Network error while saving: ' + err.message);
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = origHtml;
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', checkAuthStatus);
+    </script>
+</body>
+</html>
